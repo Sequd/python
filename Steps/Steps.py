@@ -15,6 +15,8 @@ print(ones)
 
 print(a[0:2])
 
+print("Work with ndarray :")
+
 a2 = np.ndarray((3, 4))
 print(a2)
 
