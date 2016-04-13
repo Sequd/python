@@ -1,31 +1,24 @@
 import numpy as np
 
-
-def perceptron(xv, wv):
-    return int(sum(x * w for x, w in zip(xv, wv)) > 0)
-
-
-nums1 = [1, 2, 3]
-nums2 = [3, 4, 5]
+wv = np.array([0, 0, 0], dtype=float)
+full = np.array([[1, 1, 0.3], [1, 0.4, 0.5], [1, 0.7, 0.8]], dtype=float)
+res = np.array([1, 1, 0])
+index = 0
 
 
-# sum(a1 * b1 for a1, b1 in zip(xv, wv))
+def process(step):
+    if step > 0:
+        return 1
+    else:
+        return 0
 
 
-def f(xv, wv):
-    z = zip(xv, wv)
-
-    for x, y in z:
-        print(x)
-        print(x, y)
-
-
-x1 = [1, 1, 0.3]
-w1 = [0, 0, 0]
-
-f(x1, w1)
-
-
-# v1 = perceptron(x1, w1)
-#
-# print(v1)
+for x in full:
+    step1 = process(wv.T.dot(x))
+    if step1 != res[index]:
+        if step1 == 0:
+            wv += x
+        elif step1 == 1:
+            wv -= x
+    index += 1
+    print(wv)
