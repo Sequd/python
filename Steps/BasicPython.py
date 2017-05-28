@@ -1,6 +1,14 @@
 import collections
 
 
+def test_function():
+    """I print 'Hello, world!'"""
+    print("Hello, world!")
+
+
+help(test_function)
+
+
 def test1():
     a = input()
     print(a)
@@ -30,6 +38,28 @@ def test4():
     # for a in array:
     #     cnt[a] += 1
     print('%.2f' % (array.count('A') / array.__len__()))
+
+
+def test5():
+    array = {1, 2, 3, 4}
+    print(2 in array)
+    print(2 not in array)
+
+
+def unique(interable, seen = None):
+    seen = set(seen or []) # None, 0, [], {}, все falsy, если приводить к бул
+    acc = []
+    for item in interable:
+        if item not in seen:
+            seen.add(item)
+            acc.append(item)
+    return acc
+
+xs = [1, 1, 2, 3]
+print(unique(xs))
+
+if not []:    # отрецание
+    print('false')
 
 
 test4()
