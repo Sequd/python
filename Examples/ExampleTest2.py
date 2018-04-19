@@ -18,3 +18,4 @@ step3 = step2.dot(x.T)
 H = step3.dot(y)
 
 print(H)
+

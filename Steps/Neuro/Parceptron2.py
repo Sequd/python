@@ -1,5 +1,4 @@
 import numpy as np
-import random
 
 wv = np.array([0, 0, 0], dtype=float)
 full = np.array([[1, 1, 0.3], [1, 0.4, 0.5], [1, 0.7, 0.8]], dtype=float)
