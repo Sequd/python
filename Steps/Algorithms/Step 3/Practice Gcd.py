@@ -2,7 +2,7 @@ import random
 
 
 def test(gcd, n_iter=100):
-    for i in range(n_iter):
+    for __ in range(n_iter):
         c = random.randint(0, 1024)
         a = c * random.randint(0, 128)
         b = c * random.randint(0, 128)
@@ -49,6 +49,11 @@ def gcd4(a, b):
     return gcd4(b % a, a)
 
 
+def alarm(msg):
+    assert msg is not None
+    print(msg)
+
+
 # print(gcd1(8, 3))
 # print(gcd1(8, 0))
 # print(gcd1(0, 0))
@@ -59,4 +64,7 @@ def gcd4(a, b):
 # print(gcd2(1000000000, 10000000000000))
 
 # test(gcd3)
+alarm("Hello")
+alarm()
+
 print(gcd4(24, 9))
