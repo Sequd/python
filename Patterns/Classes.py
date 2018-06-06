@@ -26,9 +26,10 @@ class Npc(Unit):
         s = "NPC %s give you quest" % self.name
         print(s)
 
+
 # Using classes
-# unit = Unit()
-# print(unit)
+unit = Unit()
+print(unit)
 #
 # enemy = Enemy("bad hungry wolf")
 # print(enemy)
