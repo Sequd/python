@@ -1,3 +1,8 @@
+from pyforms.utils.settings_manager import conf
+import settings
+
+conf += settings
+
 import pyforms
 from pyforms import BaseWidget
 from pyforms.controls import ControlText
