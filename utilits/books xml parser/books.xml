@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
+<offers>
+<offer id="549199" type="book" available="true">
+<url>https://www.books.ru/books/qnxunix-anatomiya-parallelizma-fail-pdf-549199/?show=1</url>
+<price>190</price>
+<currencyId>RUR</currencyId>
+<categoryId>4879480</categoryId>
+<picture>https://files.books.ru/pic/549001-550000/549199/000549199.jpg</picture>
+<author>Олег Цилюрик,Егор Горошко</author>
+<name>QNX/UNIX: анатомия параллелизма (файл PDF)</name>
+<description>Книга адресована программистам, работающим в самых разнообразных ОС UNIX. Рассматриваются тонкие аспекты организации параллельных ветвей вычислений (процессов и потоков) в классических последовательных архитектурах ОС UNIX. Особый акцент делается на...</description>
+<publisher>Символ-Плюс</publisher>
+<year>2006</year>
+<ISBN></ISBN>
+<series></series>
+<volume></volume>
+<part></part>
+<language>rus</language>
+<binding>мягкая обложка</binding>
+<delivery>true</delivery>
+<pickup>true</pickup>
+<page_extent></page_extent>
+<downloadable>true</downloadable>
+</offer>
+
+<offer id="552089" type="book" available="true">
+<url>https://www.books.ru/books/delphi-sovety-programmistov-fail-pdf-552089/?show=1</url>
+<price>190</price>
+<currencyId>RUR</currencyId>
+<categoryId>4879480</categoryId>
+<picture>https://files.books.ru/pic/552001-553000/552089/000552089.jpg</picture>
+<author>В.П. Озеров</author>
+<name>Delphi. Советы программистов (файл PDF)</name>
+<description>В книге рассматриваются: реализация математических алгоритмов и работа с функциями Windows API, применение массивов, работа с графикой, а также управление рабочим столом, реестром, папками и файлами Windows, форматирование дискет, взаимодействие с...</description>
+<publisher>Символ-Плюс</publisher>
+<year>2002</year>
+<ISBN></ISBN>
+<series></series>
+<volume></volume>
+<part></part>
+<language>rus</language>
+<binding></binding>
+<delivery>true</delivery>
+<pickup>true</pickup>
+<page_extent></page_extent>
+<downloadable>true</downloadable>
+</offer>
+
+<offer id="552090" type="book" available="true">
+<url>https://www.books.ru/books/unix-prakticheskoe-posobie-administratora-2-e-izdanie-fail-pdf-552090/?show=1</url>
+<price>190</price>
+<currencyId>RUR</currencyId>
+<categoryId>4879480</categoryId>
+<picture>https://files.books.ru/pic/552001-553000/552090/000552090.jpg</picture>
+<author>Филипп Торчинский</author>
+<name>Unix. Практическое пособие администратора, 2-е издание (файл PDF)</name>
+<description>Книга адресована тем, кто планирует освоить системное администрирование какого-либо UNIX, например FreeBSD, Linux, Solaris или другого. Книга также будет полезна и тем, кто уже работает системным администратором UNIX. Они в поисках информации часто...</description>
+<publisher>Символ-Плюс</publisher>
+<year>2005</year>
+<ISBN></ISBN>
+<series></series>
+<volume></volume>
+<part></part>
+<language>rus</language>
+<binding></binding>
+<delivery>true</delivery>
+<pickup>true</pickup>
+<page_extent></page_extent>
+<downloadable>true</downloadable>
+</offer>
+</offers>

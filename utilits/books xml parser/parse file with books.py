@@ -1,13 +1,6 @@
 import xml.etree.cElementTree as ET
 
 
-def parse_txt():
-    file_obj = open('books.txt')
-    for line in file_obj:
-        print(line.strip())
-        break
-
-
 def parse_xml(xml_file):
     """
         Парсинг XML используя ElementTree
@@ -16,22 +9,7 @@ def parse_xml(xml_file):
     print(tree.getroot())
     root = tree.getroot()
     print("tag=%s, attrib=%s" % (root.tag, root.attrib))
-
-    # for child in root:
-    #     print(child.tag, child.attrib)
-    #     if child.tag == "appointment":
-    #         for step_child in child:
-    #             print(step_child.tag)
-
-    # Парсинг всей XML структуры.
-    # print("-" * 40)
-    # print("Iterating using a tree iterator")
-    # print("-" * 40)
-    # iter_ = tree.iter()
-
-    # for elem in iter_:
-    #     print(elem.tag)
-
+    
     # получаем данные используя дочерние элементы.
     print("-" * 40)
     print("Обрабатываем дочерние жлменты getchildren()")
