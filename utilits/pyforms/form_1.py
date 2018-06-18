@@ -1,12 +1,12 @@
+import pyforms
+from pyforms import BaseWidget
+from pyforms.controls import ControlText
+from pyforms.controls import ControlCombo
+from pyforms.controls import ControlButton
 from pyforms.utils.settings_manager import conf
 import settings
 
 conf += settings
-
-import pyforms
-from pyforms import BaseWidget
-from pyforms.controls import ControlText
-from pyforms.controls import ControlButton
 
 
 class SimpleExample1(BaseWidget):
@@ -21,6 +21,10 @@ class SimpleExample1(BaseWidget):
         self._lastname = ControlText('Lastname name')
         self._fullname = ControlText('Full name')
         self._button = ControlButton('Press this button')
+        self._combo = ControlCombo('Select day')
+        self._combo.add_item("1", 1)
+        self._combo.add_item("2", 2)
+        self._combo.add_item("3", 3)
 
         # Define the button action
         self._button.value = self.__buttonAction
@@ -43,7 +47,7 @@ class SimpleExample1(BaseWidget):
     def __buttonAction(self):
         """Button action event"""
         self._fullname.value = self._firstname.value + " " + self._middlename.value + \
-                               " " + self._lastname.value
+                               " " + self._lastname.value + " " + str(self._combo.value)
 
 
 # Execute the application

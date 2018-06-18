@@ -1,3 +1,5 @@
+import re
+
 
 def test_function():
     """I print 'Hello, world!'"""
@@ -11,3 +13,24 @@ def test_function():
 
 
 test_function()
+
+
+def t1(data: str) -> bool:
+    if len(data) < 10:
+        return False
+
+    digital = 0
+    upper = 0
+    lower = 0
+
+    for c in data:
+        if str.isdigit(c):
+            digital += 1;
+        if str.isupper(c):
+            upper += 1;
+        if str.islower(c):
+            lower += 1;
+
+    if digital > 0 and upper > 0 and lower > 0:
+        return True
+    return False
