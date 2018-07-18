@@ -21,6 +21,7 @@ def check_password(data: str) -> bool:
     return False
 
 
+# Метод тестировая
 def test_check_password():
     assert check_password('A1213pokl') == False
     assert check_password('bAse730onE') == True

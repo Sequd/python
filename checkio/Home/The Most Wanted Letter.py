@@ -17,6 +17,7 @@ def most_wanted(text):
     return key
 
 
+# Метод тестировая
 def test_most_wanted():
     assert most_wanted("Hello World!") == "l", "Hello test"
     assert most_wanted("How do you do?") == "o", "O is most wanted"
