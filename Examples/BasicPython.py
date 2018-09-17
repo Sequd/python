@@ -47,7 +47,7 @@ def test5():
 
 
 def unique(interable, seen = None):
-    seen = set(seen or []) # None, 0, [], {}, все falsy, если приводить к бул
+    seen = set(seen or []) # None, 0, [], {}, все false, если приводить к бул
     acc = []
     for item in interable:
         if item not in seen:
