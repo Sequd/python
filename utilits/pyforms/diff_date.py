@@ -12,7 +12,7 @@ conf += settings
 class DiffDate(BaseWidget):
 
     def __init__(self):
-        super(DiffDate, self).__init__('Simple example 1')
+        super(DiffDate, self).__init__('Calc days ago')
 
         self.set_margin(5)
         # Definition of the forms fields

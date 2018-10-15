@@ -6,6 +6,7 @@ from pyforms.controls import ControlButton
 from pyforms.utils.settings_manager import conf
 import settings
 
+
 conf += settings
 
 
