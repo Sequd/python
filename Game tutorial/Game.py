@@ -13,7 +13,7 @@ missiles = []
 
 def fire_missale(x, y):
     """Конструируем и стреляем ракету"""
-    global missile
+
     missile = turtle.Turtle()
     missile.hideturtle()
     missile.speed(0)
@@ -21,19 +21,15 @@ def fire_missale(x, y):
     missile.penup()
     missile.setpos(x=BASE_X, y=BASE_Y)
     missile.pendown()
-    alpha = calc_alpha(x1=BASE_X, y1=BASE_Y, x2=x, y2=y)
+    alpha = missile.towards(x, y)
     missile.setheading(alpha)
     missile.showturtle()
-    # missile.forward(500)
-    # missile.shape('circle')
-    # missile.shapesize(2)
-    # missile.shapesize(3)
-    # missile.shapesize(4)
-    # missile.shapesize(5)
-    # missile.clear()
-    # missile.hideturtle()
-
-    info = {'m': missile, 't': [x, y], 's': 'launch', 'r': 0}
+    info = {
+        'm': missile,
+        't': [x, y],
+        's': 'launch',
+        'r': 0
+    }
     missiles.append(info)
 
 
