@@ -1,0 +1,20 @@
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+RIGHT = 0
+DOWN = 1
+LEFT = 2
+UP = 3
+
+ALIVE = 0
+DEAD = 1
+
+X = 0
+Y = 1
+D = 2
+
+START_X = 50
+START_Y = 50
+
+MAX_HP = 100
+MAX_MP = 50

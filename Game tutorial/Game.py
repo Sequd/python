@@ -11,7 +11,7 @@ BASE_X, BASE_Y = 0, -300
 missiles = []
 
 
-def fire_missale(x, y):
+def fire_missile(x, y):
     """Конструируем и стреляем ракету"""
 
     missile = turtle.Turtle()
