@@ -81,9 +81,8 @@ class Main():
 
     def main_loop(self):
         while self.running:
-            # pygame.time.delay(40)
+            # pygame.time.delay(60)
             clock.tick(FPS)
-            pygame.time.delay(60)
             self.player.move()
             self.player.update()
             self.render()
