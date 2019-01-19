@@ -3,6 +3,33 @@ from Constants import *
 from Player import *
 
 
+class SpriteSheet(object):
+    """ Class used to grab images out of a sprite sheet. """
+
+    def __init__(self, file_name):
+        """ Constructor. Pass in the file name of the sprite sheet. """
+
+        # Load the sprite sheet.
+        self.sprite_sheet = pygame.image.load(file_name).convert()
+
+    def get_image(self, x, y, width, height):
+        """ Grab a single image out of a larger spritesheet
+            Pass in the x, y location of the sprite
+            and the width and height of the sprite. """
+
+        # Create a new blank image
+        image = pygame.Surface([width, height]).convert()
+
+        # Copy the sprite from the large sheet onto the smaller image
+        image.blit(self.sprite_sheet, (0, 0), (x, y, width, height))
+
+        # Assuming black works as the transparent color
+        image.set_colorkey(constants.BLACK)
+
+        # Return the image
+        return image
+
+
 class Main():
 
     def __init__(self, screen):
@@ -54,6 +81,8 @@ class Main():
 
     def main_loop(self):
         while self.running:
+            # pygame.time.delay(40)
+            clock.tick(FPS)
             pygame.time.delay(60)
             self.player.move()
             self.player.update()
@@ -62,6 +91,8 @@ class Main():
 
 
 pygame.init()
+pygame.mixer.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('rpg game')
+clock = pygame.time.Clock()
 game = Main(screen)
