@@ -43,26 +43,41 @@ class Player():
                            './health_point.jpg', './mana_bar.jpg', './mana_point.jpg']
         self.images = []
 
-
         for image in self.image_pack:
             i = pygame.image.load(image)
             self.images.append(i)
 
         self.walking_frames_r = []
         sprite_sheet = SpriteSheet("./man.png")
-        x, y = 4, 710
+        x, y = 0, 704  # start position on sprite sheet
         # Load all the right facing images into a list
         for n in range(0, 9):
-            image = sprite_sheet.get_image(x, y, 64, 64)
+            image = sprite_sheet.get_image(x, y, HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT)
             self.walking_frames_r.append(image)
             x += 64
 
         self.walking_frames_l = []
-        x, y = 4, 580
+        x, y = 0, 576
         # Load all the left facing images into a list
         for n in range(0, 9):
             image = sprite_sheet.get_image(x, y, 64, 64)
             self.walking_frames_l.append(image)
+            x += 64
+
+        self.walking_frames_up = []
+        x, y = 0, 512
+        # Load all the left facing images into a list
+        for n in range(0, 9):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.walking_frames_up.append(image)
+            x += 64
+
+        self.walking_frames_down = []
+        x, y = 0, 640
+        # Load all the left facing images into a list
+        for n in range(0, 9):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.walking_frames_down.append(image)
             x += 64
 
         self.frame = 0
@@ -90,6 +105,23 @@ class Player():
             else:
                 self.frame = 0
 
+        if self.moving[DOWN] == 1:
+            self.image = self.walking_frames_down[self.frame]
+            if len(self.walking_frames_down) > self.frame + 1:
+                self.frame += 1
+            else:
+                self.frame = 0
+
+        if self.moving[UP] == 1:
+            self.image = self.walking_frames_up[self.frame]
+            if len(self.walking_frames_up) > self.frame + 1:
+                self.frame += 1
+            else:
+                self.frame = 0
+
+        if self.moving == [0, 0, 0, 0]:
+            self.frame = 0
+
     def move(self):
         if self.moving[UP] == 1:
             self.position[Y] -= PLAYER_SPEED
@@ -102,12 +134,12 @@ class Player():
 
         if self.position[Y] < 0:
             self.position[Y] = 0
-        if self.position[Y] > SCREEN_HEIGHT - 55:
-            self.position[Y] = SCREEN_HEIGHT - 55
+        if self.position[Y] > SCREEN_HEIGHT - HERO_SPRITE_HEIGHT:
+            self.position[Y] = SCREEN_HEIGHT - HERO_SPRITE_HEIGHT
         if self.position[X] < 0:
             self.position[X] = 0
-        if self.position[X] > SCREEN_WIDTH - 50:
-            self.position[X] = SCREEN_WIDTH - 50
+        if self.position[X] > SCREEN_WIDTH - HERO_SPRITE_WIDTH:
+            self.position[X] = SCREEN_WIDTH - HERO_SPRITE_WIDTH
 
     def lose_hp(self, damage):
         self.hp -= damage
@@ -118,13 +150,18 @@ class Player():
         self.render_ui()
 
     def render_ui(self):
-        self.screen.blit(self.images[HEALTH_BAR], (self.position[X], self.position[Y] + 60))
+
+        if DRAW_RECT:
+            pygame.draw.rect(self.screen, GREEN,
+                             [self.position[X], self.position[Y], HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT], 2)
+
+        self.screen.blit(self.images[HEALTH_BAR], (self.position[X] + 7, self.position[Y] + 64))
         d_hp = int(self.hp / HEALTH_BAR_SIZE / HEALTH_POINT_SIZE)
         for i, p in enumerate(range(0, d_hp)):
             self.screen.blit(self.images[HEALTH_POINT],
-                             (self.position[X] + (i * HEALTH_POINT_SIZE), self.position[Y] + 60))
+                             (self.position[X] + 7 + (i * HEALTH_POINT_SIZE), self.position[Y] + 64))
 
-        self.screen.blit(self.images[MP_BAR], (self.position[X], self.position[Y] + 67))
+        self.screen.blit(self.images[MP_BAR], (self.position[X] + 7, self.position[Y] + 67))
         d_mp = int(self.mp / MP_BAR_SIZE / MP_POINT_SIZE)
         for i, p in enumerate(range(0, d_mp)):
-            self.screen.blit(self.images[MP_POINT], (self.position[X] + (i * MP_POINT_SIZE), self.position[Y] + 67))
+            self.screen.blit(self.images[MP_POINT], (self.position[X] + 7 + (i * MP_POINT_SIZE), self.position[Y] + 67))
