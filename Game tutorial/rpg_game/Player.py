@@ -31,7 +31,7 @@ class SpriteSheet(object):
 
 class Player():
 
-    def __init__(self, screen):
+    def __init__(self, screen, file_name):
         self.screen = screen
         self.direction = RIGHT
         self.hp = MAX_HP
@@ -48,7 +48,7 @@ class Player():
             self.images.append(i)
 
         self.walking_frames_r = []
-        sprite_sheet = SpriteSheet("./man.png")
+        sprite_sheet = SpriteSheet(file_name)
         x, y = 0, 704  # start position on sprite sheet
         # Load all the right facing images into a list
         for n in range(0, 9):
@@ -89,6 +89,9 @@ class Player():
         #     i = []
         #     i.append(temp.subsurface(0, 0, 55, 55)) # загрузка куска изображения
         self.moving = [0, 0, 0, 0]
+
+    def set_position(self, x, y):
+        self.position = [x, y, RIGHT]
 
     def update(self):
         if self.moving[RIGHT] == 1:
@@ -150,7 +153,6 @@ class Player():
         self.render_ui()
 
     def render_ui(self):
-
         if DRAW_RECT:
             pygame.draw.rect(self.screen, GREEN,
                              [self.position[X], self.position[Y], HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT], 2)

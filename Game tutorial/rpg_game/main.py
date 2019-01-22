@@ -1,6 +1,7 @@
 import pygame
 from Constants import *
 from Player import *
+from Timer import *
 
 
 class SpriteSheet(object):
@@ -36,7 +37,10 @@ class Main():
         self.screen = screen
         self.background = pygame.image.load('./background.jpg')
         self.running = True
-        self.player = Player(screen)
+        self.player = Player(screen, './man.png')
+        self.enemy = Player(screen, './skeleton.png')
+        self.enemy.set_position(300, 300)
+        self.timer = Timer(screen)
         self.main_loop()
 
     def handle_event(self):
@@ -73,9 +77,14 @@ class Main():
                 if event.key == pygame.K_SPACE:
                     self.player.lose_hp(5)
 
+    def enemy_move(self):
+        self.enemy.moving = [0, 0, 1, 0]
+
     def render(self):
         self.screen.blit(self.background, (0, 0))
         self.player.render()
+        self.enemy.render()
+        self.timer.render()
         pygame.display.flip()
         # pygame.display.update()
 
@@ -85,6 +94,10 @@ class Main():
             clock.tick(FPS)
             self.player.move()
             self.player.update()
+            self.enemy.move()
+            self.enemy.update2 = lambda x: x.position[X] + 2 if x.position[X] < 500 else 100
+            self.enemy.position[X] = self.enemy.update2(self.enemy)
+            self.timer.update()
             self.render()
             self.handle_event()
 
