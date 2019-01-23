@@ -2,7 +2,7 @@ import pygame
 from Constants import *
 
 
-class Timer():
+class Timer:
     def __init__(self, screen):
         self.screen = screen
 
@@ -59,7 +59,7 @@ class Timer():
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
         self.frame_count += 1
         # Limit frames per second
-        #self.clock.tick(self.frame_rate)
+        # self.clock.tick(self.frame_rate)
 
     def render(self):
         self.screen.blit(self.first_text, [10, 10])
