@@ -5,6 +5,7 @@ from Constants import *
 
 class Unit:
     def __init__(self, screen, file_name, x, y, d, name, hp, mp):
+        self.speed = PLAYER_SPEED
         self.screen = screen
         self.hp = hp
         self.mp = mp
@@ -66,6 +67,7 @@ class Unit:
         self.set_direction(d)
 
     def update(self):
+        self.move()
         if self.moving[RIGHT] == 1:
             self.image = self.walking_frames_r[self.frame]
             if len(self.walking_frames_r) > self.frame + 1:
@@ -99,13 +101,13 @@ class Unit:
 
     def move(self):
         if self.moving[UP] == 1:
-            self.position[Y] -= PLAYER_SPEED
+            self.position[Y] -= self.speed
         if self.moving[DOWN] == 1:
-            self.position[Y] += PLAYER_SPEED
+            self.position[Y] += self.speed
         if self.moving[RIGHT] == 1:
-            self.position[X] += PLAYER_SPEED
+            self.position[X] += self.speed
         if self.moving[LEFT] == 1:
-            self.position[X] -= PLAYER_SPEED
+            self.position[X] -= self.speed
 
         if self.position[Y] < 0:
             self.position[Y] = 0
