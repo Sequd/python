@@ -1,20 +1,29 @@
-import pygame
 from SpriteSheet import *
 from Constants import *
 
 
 class Unit:
-    def __init__(self, screen, file_name, x, y, d, name, hp, mp):
+    def __init__(self, screen, file_name, x, y, d, name, hp, mp, defence=0):
+        self.is_render_ui = False
         self.speed = PLAYER_SPEED
         self.screen = screen
         self.hp = hp
+        self.max_hp = hp
         self.mp = mp
+        self.defence = defence
         self.state = ALIVE
         self.position = [x, y, d]
         self.name = name
         self.file_name = file_name
         self.walking_frames_r = []
         sprite_sheet = SpriteSheet(file_name)
+
+        self.image_pack_ui = ['./health_bar.jpg', './health_point.jpg', './mana_bar.jpg', './mana_point.jpg']
+        self.images_ui = []
+
+        for image in self.image_pack_ui:
+            i = pygame.image.load(image)
+            self.images_ui.append(i)
 
         x, y = 0, 704  # start position on sprite sheet
         # Load all the right facing images into a list
@@ -67,6 +76,8 @@ class Unit:
         self.set_direction(d)
 
     def update(self):
+        if self.state == DEAD:
+            return
         self.move()
         if self.moving[RIGHT] == 1:
             self.image = self.walking_frames_r[self.frame]
@@ -121,9 +132,24 @@ class Unit:
     def lose_hp(self, damage):
         self.hp -= damage
 
+    def render_ui(self):
+        self.screen.blit(self.images_ui[HEALTH_BAR], (self.position[X] + 7, self.position[Y] + HERO_SPRITE_HEIGHT))
+        d_hp = int(self.hp / HEALTH_BAR_SIZE / HEALTH_POINT_SIZE)
+        for i, p in enumerate(range(0, d_hp)):
+            self.screen.blit(self.images_ui[HEALTH_POINT],
+                             (self.position[X] + 7 + (i * HEALTH_POINT_SIZE), self.position[Y] + HERO_SPRITE_HEIGHT))
+
+        self.screen.blit(self.images_ui[MP_BAR], (self.position[X] + 7, self.position[Y] + HERO_SPRITE_HEIGHT + 7))
+        d_mp = int(self.mp / MP_BAR_SIZE / MP_POINT_SIZE)
+        for i, p in enumerate(range(0, d_mp)):
+            self.screen.blit(self.images_ui[MP_POINT],
+                             (self.position[X] + 7 + (i * MP_POINT_SIZE), self.position[Y] + HERO_SPRITE_HEIGHT + 7))
+
     def render(self):
         self.screen.blit(self.image, (self.position[X], self.position[Y]))
         self.render_rect()
+        if self.is_render_ui:
+            self.render_ui()
 
     def render_rect(self):
         if DRAW_RECT:

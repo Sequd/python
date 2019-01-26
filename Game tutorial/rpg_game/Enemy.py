@@ -5,6 +5,7 @@ class Enemy(Unit):
     def __init__(self, screen, file_name, x, y, d, name, hp, mp):
         Unit.__init__(self, screen, file_name, x, y, d, name, hp, mp)
         self.speed *= 0.5
+        self.is_render_ui = True
 
     def AI(self):
         if self.moving[LEFT] == 1:

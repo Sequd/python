@@ -51,6 +51,11 @@ class Main:
                 if event.key == pygame.K_SPACE:
                     self.player.lose_hp(5)
 
+                if event.key == pygame.K_1:
+                    self.player.used_skill(1 - 1, self.enemy)
+                if event.key == pygame.K_2:
+                    self.player.used_skill(2 - 1, self.player)
+
     def enemy_move(self):
         # self.enemy.moving = [0, 0, 1, 0]
         pass
