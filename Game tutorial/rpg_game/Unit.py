@@ -24,61 +24,92 @@ class Unit:
             i = pygame.image.load(image)
             self.images_ui.append(i)
 
-        self.walking_frames_r = []
+        self.walking_frames = [[], [], [], []]
+        # self.walking_frames_r = []
         x, y = 0, 704  # start position on sprite sheet
         # Load all the right facing images into a list
         for n in range(0, 9):
             image = sprite_sheet.get_image(x, y, HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT)
-            self.walking_frames_r.append(image)
+            # self.walking_frames_r.append(image)
+            self.walking_frames[RIGHT].append(image)
             x += 64
 
-        self.walking_frames_l = []
+        # self.walking_frames_l = []
         x, y = 0, 576
         # Load all the left facing images into a list
         for n in range(0, 9):
             image = sprite_sheet.get_image(x, y, 64, 64)
-            self.walking_frames_l.append(image)
+            # self.walking_frames_l.append(image)
+            self.walking_frames[LEFT].append(image)
             x += 64
 
-        self.walking_frames_up = []
+        # self.walking_frames_up = []
         x, y = 0, 512
-        # Load all the left facing images into a list
+        # Load all the up facing images into a list
         for n in range(0, 9):
             image = sprite_sheet.get_image(x, y, 64, 64)
-            self.walking_frames_up.append(image)
+            # self.walking_frames_up.append(image)
+            self.walking_frames[UP].append(image)
             x += 64
 
-        self.walking_frames_down = []
+        # self.walking_frames_down = []
         x, y = 0, 640
-        # Load all the left facing images into a list
+        # Load all the down facing images into a list
         for n in range(0, 9):
             image = sprite_sheet.get_image(x, y, 64, 64)
-            self.walking_frames_down.append(image)
+            # self.walking_frames_down.append(image)
+            self.walking_frames[DOWN].append(image)
             x += 64
 
         self.frames_dead = []
-        self.frame_dead = 0
         x, y = 0, 1280
-        # Load all the left facing images into a list
         for n in range(0, 6):
             image = sprite_sheet.get_image(x, y, 64, 64)
             self.frames_dead.append(image)
             x += 64
 
+        self.frames_using_skill = [[], [], [], []]
+        x, y = 0, 0
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_using_skill[UP].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_using_skill[LEFT].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_using_skill[DOWN].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_using_skill[RIGHT].append(image)
+            x += 64
+
         self.frame = 0
-        self.image = self.walking_frames_down[self.frame]
+        self.frame_dead = 0
+        self.frame_using_skill = 0
+        self.is_using_skill = False
+        # self.image = self.walking_frames_down[self.frame]
+        self.image = self.walking_frames[d][self.frame]
         self.set_direction(d)
         self.moving = [0, 0, 0, 0]
 
     def set_direction(self, d):
-        if d == RIGHT:
-            self.image = self.walking_frames_r[self.frame]
-        if d == LEFT:
-            self.image = self.walking_frames_l[self.frame]
-        if d == UP:
-            self.image = self.walking_frames_up[self.frame]
-        if d == DOWN:
-            self.image = self.walking_frames_down[self.frame]
+        self.image = self.walking_frames[d][self.frame]
+        self.position[D] = d
+        # if d == RIGHT:
+        #     self.image = self.walking_frames_r[self.frame]
+        # if d == LEFT:
+        #     self.image = self.walking_frames_l[self.frame]
+        # if d == UP:
+        #     self.image = self.walking_frames_up[self.frame]
+        # if d == DOWN:
+        #     self.image = self.walking_frames_down[self.frame]
 
     def set_position(self, x, y, d=RIGHT):
         self.position = [x, y, d]
@@ -90,34 +121,51 @@ class Unit:
             if len(self.frames_dead) > self.frame_dead + 1:
                 self.frame_dead += 1
             return
+
+        if self.is_using_skill:
+            self.image = self.frames_using_skill[self.position[D]][self.frame_using_skill]
+            if len(self.frames_using_skill[D]) > self.frame_using_skill + 1:
+                self.frame_using_skill += 1
+            else:
+                self.is_using_skill = False
+                self.frame_using_skill = 0
+                self.image = self.walking_frames[self.position[D]][self.frame]
+            return
+
         self.move()
-        if self.moving[RIGHT] == 1:
-            self.image = self.walking_frames_r[self.frame]
-            if len(self.walking_frames_r) > self.frame + 1:
-                self.frame += 1
-            else:
-                self.frame = 0
 
-        if self.moving[LEFT] == 1:
-            self.image = self.walking_frames_l[self.frame]
-            if len(self.walking_frames_l) > self.frame + 1:
-                self.frame += 1
-            else:
-                self.frame = 0
-
-        if self.moving[DOWN] == 1:
-            self.image = self.walking_frames_down[self.frame]
-            if len(self.walking_frames_down) > self.frame + 1:
-                self.frame += 1
-            else:
-                self.frame = 0
-
-        if self.moving[UP] == 1:
-            self.image = self.walking_frames_up[self.frame]
-            if len(self.walking_frames_up) > self.frame + 1:
-                self.frame += 1
-            else:
-                self.frame = 0
+        self.image = self.walking_frames[self.position[D]][self.frame]
+        if len(self.walking_frames[self.position[D]]) > self.frame + 1:
+            self.frame += 1
+        else:
+            self.frame = 0
+        # if self.moving[RIGHT] == 1:
+        #     self.image = self.walking_frames_r[self.frame]
+        #     if len(self.walking_frames_r) > self.frame + 1:
+        #         self.frame += 1
+        #     else:
+        #         self.frame = 0
+        #
+        # if self.moving[LEFT] == 1:
+        #     self.image = self.walking_frames_l[self.frame]
+        #     if len(self.walking_frames_l) > self.frame + 1:
+        #         self.frame += 1
+        #     else:
+        #         self.frame = 0
+        #
+        # if self.moving[DOWN] == 1:
+        #     self.image = self.walking_frames_down[self.frame]
+        #     if len(self.walking_frames_down) > self.frame + 1:
+        #         self.frame += 1
+        #     else:
+        #         self.frame = 0
+        #
+        # if self.moving[UP] == 1:
+        #     self.image = self.walking_frames_up[self.frame]
+        #     if len(self.walking_frames_up) > self.frame + 1:
+        #         self.frame += 1
+        #     else:
+        #         self.frame = 0
 
         if self.moving == [0, 0, 0, 0]:
             self.frame = 0

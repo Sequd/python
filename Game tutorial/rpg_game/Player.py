@@ -12,4 +12,5 @@ class Player(Unit):
         self.skills.append(Heal())
 
     def used_skill(self, skill_num, target):
+        self.is_using_skill = True
         self.skills[skill_num].use(target)

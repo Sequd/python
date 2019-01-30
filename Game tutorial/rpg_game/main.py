@@ -74,7 +74,6 @@ class Main:
             clock.tick(FPS)
             self.player.update()
             self.enemy.update()
-            # self.enemy.move()
             # self.enemy.update2 = lambda x: x.position[X] + 2 if x.position[X] < 500 else 100
             # self.enemy.position[X] = self.enemy.update2(self.enemy)
             self.timer.update()

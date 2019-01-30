@@ -27,6 +27,7 @@ class MEGA_DAMAGE_SKILL(Damage_Skill):
         Damage_Skill.__init__(self, 25, 0, 50)
 
     def use(self, target):
+        Skill.use(self, target)
         target.lose_hp(self.damage)
 
 
@@ -36,6 +37,7 @@ class Heal(Skill):
         self.modification_value = 15
 
     def use(self, target: Unit):
+        Skill.use(self, target)
         if target.hp < target.max_hp:
             target.hp += self.modification_value
         if target.hp > target.max_hp:
