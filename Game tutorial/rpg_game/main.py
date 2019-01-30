@@ -66,7 +66,7 @@ class Main:
         self.enemy.render()
         self.timer.render()
         pygame.display.flip()
-        # pygame.display.update()
+
 
     def main_loop(self):
         while self.running:

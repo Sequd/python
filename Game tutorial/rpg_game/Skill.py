@@ -27,9 +27,7 @@ class MEGA_DAMAGE_SKILL(Damage_Skill):
         Damage_Skill.__init__(self, 25, 0, 50)
 
     def use(self, target):
-        target.hp -= self.damage
-        if target.hp <= 0:
-            target.state = DEAD
+        target.lose_hp(self.damage)
 
 
 class Heal(Skill):

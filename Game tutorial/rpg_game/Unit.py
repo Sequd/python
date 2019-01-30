@@ -15,7 +15,6 @@ class Unit:
         self.position = [x, y, d]
         self.name = name
         self.file_name = file_name
-        self.walking_frames_r = []
         sprite_sheet = SpriteSheet(file_name)
 
         self.image_pack_ui = ['./health_bar.jpg', './health_point.jpg', './mana_bar.jpg', './mana_point.jpg']
@@ -25,6 +24,7 @@ class Unit:
             i = pygame.image.load(image)
             self.images_ui.append(i)
 
+        self.walking_frames_r = []
         x, y = 0, 704  # start position on sprite sheet
         # Load all the right facing images into a list
         for n in range(0, 9):
@@ -56,6 +56,15 @@ class Unit:
             self.walking_frames_down.append(image)
             x += 64
 
+        self.frames_dead = []
+        self.frame_dead = 0
+        x, y = 0, 1280
+        # Load all the left facing images into a list
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_dead.append(image)
+            x += 64
+
         self.frame = 0
         self.image = self.walking_frames_down[self.frame]
         self.set_direction(d)
@@ -77,6 +86,9 @@ class Unit:
 
     def update(self):
         if self.state == DEAD:
+            self.image = self.frames_dead[self.frame_dead]
+            if len(self.frames_dead) > self.frame_dead + 1:
+                self.frame_dead += 1
             return
         self.move()
         if self.moving[RIGHT] == 1:
@@ -131,6 +143,8 @@ class Unit:
 
     def lose_hp(self, damage):
         self.hp -= damage
+        if self.hp <= 0:
+            self.state = DEAD
 
     def render_ui(self):
         self.screen.blit(self.images_ui[HEALTH_BAR], (self.position[X] + 7, self.position[Y] + HERO_SPRITE_HEIGHT))
