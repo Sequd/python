@@ -11,6 +11,8 @@ class Arrow:
         self.y = y
         self.d = d
 
+    def get_rect(self):
+        return pygame.Rect(self.x, self.y, 15, 15)
 
 class Main:
     def __init__(self, screen):
@@ -84,6 +86,7 @@ class Main:
                 #     self.player.is_attack_range = False
 
     def update(self):
+
         for arrow in self.arrows:
             if arrow.d == UP:
                 arrow.y -= ARROW_SPEED
@@ -102,6 +105,13 @@ class Main:
                 self.arrows.remove(arrow)
             if arrow.x > SCREEN_WIDTH - 15:
                 self.arrows.remove(arrow)
+
+            if self.enemy.get_rect().colliderect(arrow.get_rect()):
+                self.enemy.lose_hp(10)
+                self.arrows.remove(arrow)
+                print("collide")
+
+            # pygame.sprite.collide_rect(self.enemy.rect,
 
     def render(self):
         self.screen.blit(self.background, (0, 0))

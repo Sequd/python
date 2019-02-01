@@ -138,6 +138,7 @@ class Unit:
         self.is_attack = False
         self.is_attack_range = False
         self.image = self.walking_frames[d][self.frame]
+        self.rect = pygame.Rect(self.position[X], self.position[Y], HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT)
         self.set_direction(d)
         self.moving = [0, 0, 0, 0]
 
@@ -148,6 +149,9 @@ class Unit:
     def set_position(self, x, y, d=RIGHT):
         self.position = [x, y, d]
         self.set_direction(d)
+
+    def get_rect(self):
+        return pygame.Rect(self.position[X], self.position[Y], HERO_SPRITE_WIDTH, HERO_SPRITE_HEIGHT)
 
     def update(self):
         if self.state == DEAD:
