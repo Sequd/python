@@ -19,13 +19,11 @@ class Unit:
 
         self.image_pack_ui = ['./health_bar.jpg', './health_point.jpg', './mana_bar.jpg', './mana_point.jpg']
         self.images_ui = []
-
         for image in self.image_pack_ui:
             i = pygame.image.load(image)
             self.images_ui.append(i)
 
         self.walking_frames = [[], [], [], []]
-        # self.walking_frames_r = []
         x, y = 0, 704  # start position on sprite sheet
         # Load all the right facing images into a list
         for n in range(0, 9):
@@ -34,7 +32,6 @@ class Unit:
             self.walking_frames[RIGHT].append(image)
             x += 64
 
-        # self.walking_frames_l = []
         x, y = 0, 576
         # Load all the left facing images into a list
         for n in range(0, 9):
@@ -43,7 +40,6 @@ class Unit:
             self.walking_frames[LEFT].append(image)
             x += 64
 
-        # self.walking_frames_up = []
         x, y = 0, 512
         # Load all the up facing images into a list
         for n in range(0, 9):
@@ -52,7 +48,6 @@ class Unit:
             self.walking_frames[UP].append(image)
             x += 64
 
-        # self.walking_frames_down = []
         x, y = 0, 640
         # Load all the down facing images into a list
         for n in range(0, 9):
@@ -90,11 +85,58 @@ class Unit:
             self.frames_using_skill[RIGHT].append(image)
             x += 64
 
+        self.frames_attack_melee = [[], [], [], []]
+        x, y = 0, 768
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_melee[UP].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_melee[LEFT].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_melee[DOWN].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 6):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_melee[RIGHT].append(image)
+            x += 64
+
+        self.frames_attack_range = [[], [], [], []]
+        x, y = 0, 1024
+        for n in range(0, 13):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_range[UP].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 13):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_range[LEFT].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 13):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_range[DOWN].append(image)
+            x += 64
+        x, y = 0, y + 64
+        for n in range(0, 13):
+            image = sprite_sheet.get_image(x, y, 64, 64)
+            self.frames_attack_range[RIGHT].append(image)
+            x += 64
+
         self.frame = 0
         self.frame_dead = 0
         self.frame_using_skill = 0
+        self.frame_attack_melee = 0
+        self.frame_attack_range = 0
         self.is_using_skill = False
-        # self.image = self.walking_frames_down[self.frame]
+        self.is_attack = False
+        self.is_attack_range = False
         self.image = self.walking_frames[d][self.frame]
         self.set_direction(d)
         self.moving = [0, 0, 0, 0]
@@ -102,14 +144,6 @@ class Unit:
     def set_direction(self, d):
         self.image = self.walking_frames[d][self.frame]
         self.position[D] = d
-        # if d == RIGHT:
-        #     self.image = self.walking_frames_r[self.frame]
-        # if d == LEFT:
-        #     self.image = self.walking_frames_l[self.frame]
-        # if d == UP:
-        #     self.image = self.walking_frames_up[self.frame]
-        # if d == DOWN:
-        #     self.image = self.walking_frames_down[self.frame]
 
     def set_position(self, x, y, d=RIGHT):
         self.position = [x, y, d]
@@ -120,6 +154,26 @@ class Unit:
             self.image = self.frames_dead[self.frame_dead]
             if len(self.frames_dead) > self.frame_dead + 1:
                 self.frame_dead += 1
+            return
+
+        if self.is_attack:
+            self.image = self.frames_attack_melee[self.position[D]][self.frame_attack_melee]
+            if len(self.frames_attack_melee[D]) > self.frame_attack_melee + 1:
+                self.frame_attack_melee += 1
+            else:
+                self.is_attack = False
+                self.frame_attack_melee = 0
+                self.image = self.walking_frames[self.position[D]][self.frame]
+            return
+
+        if self.is_attack_range:
+            self.image = self.frames_attack_range[self.position[D]][self.frame_attack_range]
+            if len(self.frames_attack_range[D]) > self.frame_attack_range + 1:
+                self.frame_attack_range += 1
+            else:
+                self.is_attack_range = False
+                self.frame_attack_range = 0
+                self.image = self.walking_frames[self.position[D]][self.frame]
             return
 
         if self.is_using_skill:
@@ -139,33 +193,6 @@ class Unit:
             self.frame += 1
         else:
             self.frame = 0
-        # if self.moving[RIGHT] == 1:
-        #     self.image = self.walking_frames_r[self.frame]
-        #     if len(self.walking_frames_r) > self.frame + 1:
-        #         self.frame += 1
-        #     else:
-        #         self.frame = 0
-        #
-        # if self.moving[LEFT] == 1:
-        #     self.image = self.walking_frames_l[self.frame]
-        #     if len(self.walking_frames_l) > self.frame + 1:
-        #         self.frame += 1
-        #     else:
-        #         self.frame = 0
-        #
-        # if self.moving[DOWN] == 1:
-        #     self.image = self.walking_frames_down[self.frame]
-        #     if len(self.walking_frames_down) > self.frame + 1:
-        #         self.frame += 1
-        #     else:
-        #         self.frame = 0
-        #
-        # if self.moving[UP] == 1:
-        #     self.image = self.walking_frames_up[self.frame]
-        #     if len(self.walking_frames_up) > self.frame + 1:
-        #         self.frame += 1
-        #     else:
-        #         self.frame = 0
 
         if self.moving == [0, 0, 0, 0]:
             self.frame = 0
