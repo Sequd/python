@@ -14,14 +14,18 @@ class Arrow:
     def get_rect(self):
         return pygame.Rect(self.x, self.y, 15, 15)
 
+
 class Main:
     def __init__(self, screen):
         self.screen = screen
         self.background = pygame.image.load('./background.jpg')
         self.running = True
         self.player = Player(screen, './man.png')
-        self.enemy = Skeleton(screen)
-        self.enemy.set_position(300, 350, LEFT)
+        self.enemies = []
+        self.enemies.append(Skeleton(screen, 400, 400))
+        enemy = Skeleton(screen)
+        enemy.set_position(300, 350, LEFT)
+        self.enemies.append(enemy)
         self.image_arrows = [RIGHT, DOWN, LEFT, UP]
         self.image_arrows[RIGHT] = pygame.image.load('./arrow_right.png')
         self.image_arrows[DOWN] = pygame.image.load('./arrow_down.png')
@@ -38,6 +42,9 @@ class Main:
 
             # Действие при нажатии кнопки
             elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+
                 if event.key == pygame.K_RIGHT:
                     self.player.position[D] = RIGHT
                     self.player.moving = [1, 0, 0, 0]
@@ -77,13 +84,9 @@ class Main:
                     self.player.lose_hp(5)
 
                 if event.key == pygame.K_1:
-                    self.player.used_skill(1 - 1, self.enemy)
+                    self.player.used_skill(1 - 1, self.enemies[0])
                 if event.key == pygame.K_2:
                     self.player.used_skill(2 - 1, self.player)
-                # if event.key == pygame.K_a:
-                #     self.player.is_attack = False
-                # if event.key == pygame.K_d:
-                #     self.player.is_attack_range = False
 
     def update(self):
 
@@ -106,19 +109,21 @@ class Main:
             if arrow.x > SCREEN_WIDTH - 15:
                 self.arrows.remove(arrow)
 
-            if self.enemy.get_rect().colliderect(arrow.get_rect()):
-                self.enemy.lose_hp(10)
-                self.arrows.remove(arrow)
-                print("collide")
-
-            # pygame.sprite.collide_rect(self.enemy.rect,
+            gen = (x for x in self.enemies if x.state == ALIVE)
+            for enemy in gen:
+                if enemy.get_rect().colliderect(arrow.get_rect()):
+                    enemy.lose_hp(10)
+                    self.arrows.remove(arrow)
+                    print("collide")
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
         for arrow in self.arrows:
             self.screen.blit(self.image_arrows[arrow.d], (arrow.x, arrow.y))
         self.player.render()
-        self.enemy.render()
+        for enemy in self.enemies:
+            enemy.render()
+
         self.timer.render()
         pygame.display.flip()
 
@@ -127,7 +132,8 @@ class Main:
             clock.tick(FPS)
             self.update()
             self.player.update()
-            self.enemy.update()
+            for enemy in self.enemies:
+                enemy.update()
             # self.enemy.update2 = lambda x: x.position[X] + 2 if x.position[X] < 500 else 100
             # self.enemy.position[X] = self.enemy.update2(self.enemy)
             self.timer.update()

@@ -29,5 +29,5 @@ class Enemy(Unit):
 
 
 class Skeleton(Enemy):
-    def __init__(self, screen):
-        Enemy.__init__(self, screen, './skeleton.png', 300, 300, DOWN, 'Skeleton', 100, 0)
+    def __init__(self, screen, x=300, y=300):
+        Enemy.__init__(self, screen, './skeleton.png', x, y, DOWN, 'Skeleton', 100, 0)
