@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pygame
 from Player import *
 from Timer import *
@@ -38,7 +39,7 @@ class Main:
         self.image_arrows[UP] = pygame.image.load('./arrow_up.png')
         self.arrows = []
         self.timer = Timer(screen)
-        self.button = Button(screen, "Button 1", quit_game)
+        self.button = Button(screen, "Button 1", action=quit_game)
 
     def handle_event(self):
         for event in pygame.event.get():

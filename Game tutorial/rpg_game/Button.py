@@ -1,5 +1,7 @@
+import pygame
 from Unit import *
 from Skill import *
+from Constants import *
 
 
 class Button:
@@ -19,13 +21,13 @@ class Button:
     def update(self):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        print(click)
+
         if self.action is not None:
             if self.x + self.w > mouse[0] > self.x and self.y + self.h > mouse[1] > self.y:
                 if click[0] == 1:
+                    print(click)
                     self.action()
 
     def render(self):
-        # pygame.draw.rect(self.screen, (216, 169, 3), [self.x, self.y, self.w, self.h])
-        # self.screen.blit(self.first_text, [self.x, self.y])
-        pass
+        pygame.draw.rect(self.screen, GREEN, [self.x, self.y, self.w, self.h])
+        self.screen.blit(self.first_text, (self.x, self.y))
