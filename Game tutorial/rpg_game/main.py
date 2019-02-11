@@ -3,6 +3,7 @@ from Player import *
 from Timer import *
 from Enemy import *
 from Constants import *
+from Button import *
 
 
 class Arrow:
@@ -13,6 +14,10 @@ class Arrow:
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, 15, 15)
+
+
+def quit_game():
+    print("Quit event")
 
 
 class Main:
@@ -33,7 +38,7 @@ class Main:
         self.image_arrows[UP] = pygame.image.load('./arrow_up.png')
         self.arrows = []
         self.timer = Timer(screen)
-        self.main_loop()
+        self.button = Button(screen, "Button 1", quit_game)
 
     def handle_event(self):
         for event in pygame.event.get():
@@ -116,6 +121,8 @@ class Main:
                     self.arrows.remove(arrow)
                     print("collide")
 
+        self.button.update()
+
     def render(self):
         self.screen.blit(self.background, (0, 0))
         for arrow in self.arrows:
@@ -125,6 +132,7 @@ class Main:
             enemy.render()
 
         self.timer.render()
+        self.button.render()
         pygame.display.flip()
 
     def main_loop(self):
@@ -147,3 +155,4 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('rpg game')
 clock = pygame.time.Clock()
 game = Main(screen)
+game.main_loop()
