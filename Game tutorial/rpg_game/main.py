@@ -19,6 +19,7 @@ class Arrow:
 
 def quit_game():
     print("Quit event")
+    quit()
 
 
 class Main:
@@ -39,7 +40,7 @@ class Main:
         self.image_arrows[UP] = pygame.image.load('./arrow_up.png')
         self.arrows = []
         self.timer = Timer(screen)
-        self.button = Button(screen, "Button 1", action=quit_game)
+        self.buttons = [Button(screen, "Exit", action=quit_game)]
 
     def handle_event(self):
         for event in pygame.event.get():
@@ -122,7 +123,8 @@ class Main:
                     self.arrows.remove(arrow)
                     print("collide")
 
-        self.button.update()
+        for button in self.buttons:
+            button.update()
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
@@ -133,7 +135,8 @@ class Main:
             enemy.render()
 
         self.timer.render()
-        self.button.render()
+        for button in self.buttons:
+            button.render()
         pygame.display.flip()
 
     def main_loop(self):
