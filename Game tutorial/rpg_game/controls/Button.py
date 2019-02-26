@@ -1,6 +1,4 @@
-import pygame
-from Unit import *
-from Skill import *
+from skills.Skill import *
 from Constants import *
 
 

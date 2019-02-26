@@ -1,4 +1,4 @@
-from Unit import *
+from units.Unit import *
 
 
 class Enemy(Unit):
@@ -30,4 +30,4 @@ class Enemy(Unit):
 
 class Skeleton(Enemy):
     def __init__(self, screen, x=300, y=300):
-        Enemy.__init__(self, screen, './skeleton.png', x, y, DOWN, 'Skeleton', 100, 0)
+        Enemy.__init__(self, screen, './data/skeleton.png', x, y, DOWN, 'Skeleton', 100, 0)

@@ -1,5 +1,4 @@
-from Unit import *
-from Skill import *
+from skills.Skill import *
 
 
 class Player(Unit):

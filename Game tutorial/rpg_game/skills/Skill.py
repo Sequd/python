@@ -1,5 +1,4 @@
-from Unit import *
-from Constants import *
+from units.Unit import *
 
 
 class Skill:
