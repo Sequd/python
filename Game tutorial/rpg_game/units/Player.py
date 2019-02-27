@@ -1,7 +1,10 @@
 from skills.Skill import *
+from units.Inventory import Inventory
 
 
 class Player(Unit):
+    inventory = Inventory()
+
     def __init__(self, screen, file_name):
         Unit.__init__(self, screen, file_name, START_X, START_Y, RIGHT, 'Player 1', MAX_HP, MAX_MP)
 
