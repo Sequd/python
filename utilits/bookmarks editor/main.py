@@ -53,10 +53,11 @@ def get_children(obj):
         return obj['children']
 
 
-with open('bookmarks.json') as json_file:
+with open('bookmarks2.json') as json_file:
     data = json.load(json_file)
     data = data["roots"]["bookmark_bar"]
     loop(data)
 
-favorites = {k: v for k, v in favorites.items() if v.url == v.name}
-a = 1
+favorites = {k: v for k, v in favorites.items() if v.name.startswith("http")}
+#a = 1
+print(len(favorites))
