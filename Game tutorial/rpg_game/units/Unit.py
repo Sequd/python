@@ -1,4 +1,4 @@
-from SpriteSheet import *
+from core.SpriteSheet import *
 from Constants import *
 
 
@@ -17,7 +17,7 @@ class Unit:
         self.file_name = file_name
         sprite_sheet = SpriteSheet(file_name)
 
-        self.image_pack_ui = ['./health_bar.jpg', './health_point.jpg', './mana_bar.jpg', './mana_point.jpg']
+        self.image_pack_ui = ['./data/health_bar.jpg', './data/health_point.jpg', './data/mana_bar.jpg', './data/mana_point.jpg']
         self.images_ui = []
         for image in self.image_pack_ui:
             i = pygame.image.load(image)

@@ -1,8 +1,8 @@
-import pygame
-from Player import *
-from Timer import *
-from Enemy import *
-from Constants import *
+# -*- coding: utf-8 -*-
+from units.Player import *
+from core.Timer import *
+from units.Enemy import *
+from controls.Button import *
 
 
 class Arrow:
@@ -15,25 +15,30 @@ class Arrow:
         return pygame.Rect(self.x, self.y, 15, 15)
 
 
+def quit_game():
+    print("Quit event")
+    quit()
+
+
 class Main:
     def __init__(self, screen):
         self.screen = screen
-        self.background = pygame.image.load('./background.jpg')
+        self.background = pygame.image.load('./data/background.jpg')
         self.running = True
-        self.player = Player(screen, './man.png')
+        self.player = Player(screen, './data/man.png')
         self.enemies = []
         self.enemies.append(Skeleton(screen, 400, 400))
         enemy = Skeleton(screen)
         enemy.set_position(300, 350, LEFT)
         self.enemies.append(enemy)
         self.image_arrows = [RIGHT, DOWN, LEFT, UP]
-        self.image_arrows[RIGHT] = pygame.image.load('./arrow_right.png')
-        self.image_arrows[DOWN] = pygame.image.load('./arrow_down.png')
-        self.image_arrows[LEFT] = pygame.image.load('./arrow_left.png')
-        self.image_arrows[UP] = pygame.image.load('./arrow_up.png')
+        self.image_arrows[RIGHT] = pygame.image.load('./data/arrow_right.png')
+        self.image_arrows[DOWN] = pygame.image.load('./data/arrow_down.png')
+        self.image_arrows[LEFT] = pygame.image.load('./data/arrow_left.png')
+        self.image_arrows[UP] = pygame.image.load('./data/arrow_up.png')
         self.arrows = []
         self.timer = Timer(screen)
-        self.main_loop()
+        self.buttons = [Button(screen, "Exit", action=quit_game)]
 
     def inputs(self, events):
         for event in events:
@@ -120,6 +125,9 @@ class Main:
                     self.arrows.remove(arrow)
                     print("collide")
 
+        for button in self.buttons:
+            button.update()
+
     def render(self):
         self.screen.blit(self.background, (0, 0))
         for arrow in self.arrows:
@@ -128,6 +136,8 @@ class Main:
             enemy.render()
         self.player.render()
         self.timer.render()
+        for button in self.buttons:
+            button.render()
         pygame.display.flip()
 
     def main_loop(self):
@@ -150,3 +160,4 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('rpg game')
 clock = pygame.time.Clock()
 game = Main(screen)
+game.main_loop()

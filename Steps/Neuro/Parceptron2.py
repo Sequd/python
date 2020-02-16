@@ -1,28 +1,22 @@
 import numpy as np
 
-wv = np.array([0, 0, 0], dtype=float)
-full = np.array([[1, 1, 0.3], [1, 0.4, 0.5], [1, 0.7, 0.8]], dtype=float)
-res = np.array([1, 1, 0])
-index = 0
-
-a = np.array((1, 2), dtype=int)
-print(a)
-print(a.shape)
-
-
-def process(step):
-    if step > 0:
-        return 1
-    else:
-        return 0
+# начальные веса
+w = np.array([0, 0, 0], dtype=float)
+# начальные данные
+data = np.array([[1, 1, 0.3],
+                 [1, 0.4, 0.5],
+                 [1, 0.7, 0.8]])
+# необходимые результаты
+# y - вектор ответов
+y = np.array([1, 1, 0])
 
 
-for x in full:
-    step1 = process(wv.T.dot(x))
-    if step1 != res[index]:
-        if step1 == 0:
-            wv += x
-        elif step1 == 1:
-            wv -= x
-    index += 1
-    print(wv)
+for i, xi in enumerate(data):
+    yi = 1 if w.dot(xi) > 0 else 0
+    if yi != y[i]:
+        if yi == 0:
+            w += xi
+        elif yi == 1:
+            w -= xi
+
+print(w)
