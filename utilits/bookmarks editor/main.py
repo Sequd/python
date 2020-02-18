@@ -93,4 +93,4 @@ def loop_write(data):
 loop_write(json_data)
 
 with open(json_name, 'w') as json_file:
-    json.dump(json_data, json_file)
+    json.dump(json_data, json_file, ensure_ascii=False)
