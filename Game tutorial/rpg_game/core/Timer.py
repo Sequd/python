@@ -35,7 +35,7 @@ class Timer:
         output_string = "Time: {0:02}:{1:02}".format(minutes, seconds)
 
         # Blit to the screen
-        self.first_text = self.font.render(output_string, True, BLACK)
+        self.first_text = self.font.render(output_string, True, RED, BLACK)
 
         # --- Timer going down ---
         # --- Timer going up ---
@@ -54,7 +54,7 @@ class Timer:
         output_string = "Time left: {0:02}:{1:02}".format(minutes, seconds)
 
         # Blit to the screen
-        self.text = self.font.render(output_string, True, BLACK)
+        self.text = self.font.render(output_string, True, RED, BLACK)
 
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
         self.frame_count += 1

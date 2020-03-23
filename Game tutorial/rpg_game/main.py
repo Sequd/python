@@ -40,14 +40,15 @@ class Main:
         self.timer = Timer(screen)
         self.buttons = [Button(screen, "Exit", action=quit_game)]
 
-    def handle_event(self):
-        for event in pygame.event.get():
+    def inputs(self, events):
+        for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
 
             # Действие при нажатии кнопки
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    self.running = False
                     pygame.quit()
 
                 if event.key == pygame.K_RIGHT:
@@ -93,6 +94,9 @@ class Main:
                 if event.key == pygame.K_2:
                     self.player.used_skill(2 - 1, self.player)
 
+    def handle_event(self):
+        self.inputs(pygame.event.get())
+
     def update(self):
 
         for arrow in self.arrows:
@@ -128,10 +132,9 @@ class Main:
         self.screen.blit(self.background, (0, 0))
         for arrow in self.arrows:
             self.screen.blit(self.image_arrows[arrow.d], (arrow.x, arrow.y))
-        self.player.render()
         for enemy in self.enemies:
             enemy.render()
-
+        self.player.render()
         self.timer.render()
         for button in self.buttons:
             button.render()
@@ -141,9 +144,9 @@ class Main:
         while self.running:
             clock.tick(FPS)
             self.update()
-            self.player.update()
             for enemy in self.enemies:
                 enemy.update()
+            self.player.update()
             # self.enemy.update2 = lambda x: x.position[X] + 2 if x.position[X] < 500 else 100
             # self.enemy.position[X] = self.enemy.update2(self.enemy)
             self.timer.update()
