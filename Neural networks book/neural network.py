@@ -1,5 +1,6 @@
 import numpy
 import scipy.special
+import matplotlib.pyplot as plt
 
 
 # определение класса нейроной сети
@@ -19,13 +20,15 @@ class NeuralNetwork:
         # w11 w21
         # w12 w22 etc
         # матрици весов связей wih (входной-скрытый)
-        self.wih = (numpy.random.rand(self.hidden, self.input) - 0.5)
+        # self.wih = (numpy.random.rand(self.hidden, self.input) - 0.5)
 
         # матрици весов связей who (скрытый-выходной)
-        self.who = (numpy.random.rand(self.output, self.hidden) - 0.5)
+        # self.who = (numpy.random.rand(self.output, self.hidden) - 0.5)
 
-        # self.wih = numpy.random.normal(0.0, pow(self.inodes, -0.5), (self.hnodes, self.inodes))
-        # self.who = numpy.random.normal(0.0, pow(self.hnodes, -0.5), (self.onodes, self.hnodes))
+        self.wih = numpy.random.normal(0.0, pow(self.input, -0.5),
+                                       (self.hidden, self.input))
+        self.who = numpy.random.normal(0.0, pow(self.hidden, -0.5),
+                                       (self.output, self.hidden))
 
         # сигмоида в качестве функции активации
         self.activation_function = lambda x: scipy.special.expit(x)
@@ -84,11 +87,67 @@ class NeuralNetwork:
         return final_outputs
 
 
-input_number = 3
-hidden_number = 3
-output_number = 3
+# кол-во входных, скрытых и выходных узлов
+input_number = 784
+hidden_number = 100
+output_number = 10
 rate = 0.3
 
 n = NeuralNetwork(input_number, hidden_number, output_number, rate)
-final = n.query([1.0, 0.5, -1.5])
-print(final)
+
+data_file = open("dataset/mnist_train.csv", 'r')
+data_list = data_file.readlines()
+data_file.close()
+
+# тренеровка сети
+
+epochs = 1
+
+for _ in range(epochs):
+    # перебрать все записи в тренеровочном наборе
+    for record in data_list:
+        all_values = record.split(',')
+        # масштабировать и сместить входные данные
+        inputs_data = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+        # создать целевые входные значения, все 0.01 кроме маркерного (0.99)
+        targets = numpy.zeros(output_number) + 0.01
+        targets[int(all_values[0])] = 0.99
+        n.train(inputs_data, targets)
+
+# проверка сети
+
+
+test_data_file = open("dataset/mnist_test.csv", 'r')
+test_data_list = test_data_file.readlines()
+test_data_file.close()
+
+# журнал оценок сети
+scorecard = []
+for record in test_data_list:
+    all_values = record.split(',')
+    correct_label = int(all_values[0])
+
+    print(correct_label, "истеный маркер")
+
+    # масштабировать и сместить входные значения
+    inputs_data = (numpy.asfarray(all_values[1:]) / 255.0 * 0.99) + 0.01
+
+    # опрос сети
+    outputs = n.query(inputs_data)
+
+    # наибольшый маркер
+    label = numpy.argmax(outputs)
+    print(label, "ответ сети")
+    # присоеденить оценку ответа сети к таблице
+    if label == correct_label:
+        scorecard.append(1)
+    else:
+        scorecard.append(0)
+
+print(scorecard)
+scorecard_array = numpy.asarray(scorecard)
+print("эффективность сети = ", scorecard_array.sum() / scorecard_array.size)
+# image_array = numpy.asfarray(all_values[1:]).reshape((28, 28))
+# plt.imshow(image_array, cmap='Greys', interpolation='None')
+# plt.show()
+# n.query()
