@@ -1,7 +1,6 @@
 # snake.py
 
 from tkinter import *
-import time
 from extensions.callinfo import info
 
 # глобальные переменные
@@ -10,6 +9,32 @@ WIDTH = 400
 HEIGHT = 400
 SNAKE_SPEED = 20
 CELL_SIZE = 20
+
+
+class Snake:
+    tail = []
+    direction = RIGHT
+    direction_dict = {
+        LEFT: (-CELL_SIZE, 0),
+        TOP: (0, -CELL_SIZE),
+        RIGHT: (CELL_SIZE, 0),
+        BOTTOM: (0, CELL_SIZE),
+    }
+
+    def addTail(self, x, y):
+        self.tail.append(rect(x, y))
+
+    def move(self):
+        dx, dy = self.direction_dict[self.direction]
+        b = canvas.bbox(self.tail[0])
+        canvas.move(self.tail[0], dx, dy)
+        for t in self.tail:
+            pass
+
+    @info
+    def eat(self, x, y):
+        print("EAT FOOD")
+        self.addTail(x, y)
 
 
 @info
@@ -23,19 +48,23 @@ def click(event):
 @info
 # функция обработки нажатия клавиш
 def movement_handler(event):
-    # if event.keysym == "w":
-    #     LEFT_PAD_SPEED = -SNAKE_SPEED
-    # elif event.keysym == "s":
-    #     LEFT_PAD_SPEED = SNAKE_SPEED
-    # elif event.keysym == "Up":
-    #     RIGHT_PAD_SPEED = -SNAKE_SPEED
-    # elif event.keysym == "Down":
-    #     RIGHT_PAD_SPEED = SNAKE_SPEED
-    pass
+    if event.keysym == "w" or event.keysym == "Up":
+        snake.direction = TOP
+    elif event.keysym == "s" or event.keysym == "Down":
+        snake.direction = BOTTOM
+    elif event.keysym == "a" or event.keysym == "Left":
+        snake.direction = LEFT
+    elif event.keysym == "d" or event.keysym == "Right":
+        snake.direction = RIGHT
 
 
 root = Tk()  # Основное окно программы
 root.title("Игра")
+
+
+def rect(x, y):
+    return canvas.create_rectangle(x, y, x + CELL_SIZE, y + CELL_SIZE, fill='white')
+
 
 # область анимации
 canvas = Canvas(root, width=WIDTH, height=HEIGHT, background="white")
@@ -46,35 +75,28 @@ for i in range(0, int(WIDTH / CELL_SIZE)):
         canvas.create_rectangle(i * CELL_SIZE, j * CELL_SIZE,
                                 i * CELL_SIZE + CELL_SIZE,
                                 j * CELL_SIZE + CELL_SIZE, fill='gray')
-oval = canvas.create_oval(10, 10, 40, 40, fill='white')
+food = canvas.create_oval(WIDTH / 2 - CELL_SIZE, HEIGHT / 2 - CELL_SIZE, WIDTH / 2, HEIGHT / 2, fill='red')
+snake = Snake()
+snake.addTail(0, 0)
 canvas.focus_set()
 canvas.pack()
 
 
 def main():
-    canvas.move(oval, 5, 0)
+    snake.move()
+    head = snake.tail[0]
+    b = canvas.bbox(head)
+    b2 = canvas.bbox(food)
+    if b == b2:
+        snake.eat(b2[0], b[1])
+        canvas.coords(food, 0, 0, 40, 40)
+        # canvas.move(food, 0, 0, CELL_SIZE + CELL_SIZE, CELL_SIZE + CELL_SIZE)
 
     # x1, y1, x2, y2 = canvas.coords(oval)
     # canvas.coords(oval, x1 + 5, y1 + 5, x2 + 5, y2 + 5)
     # вызываем саму себя каждые 30 миллисекунд
-    root.after(33, main)
+    root.after(250, main)
 
-
-# def tick(fps, callback):
-#     frame = 0
-#     start = time.perf_counter()
-#     while True:
-#         callback()
-#         frame += 1
-#         target = frame / fps
-#         passed = time.perf_counter() - start
-#         differ = target - passed
-#         if differ < 0:
-#             raise ValueError('callback was too slow')
-#         time.sleep(differ)
-#
-#
-# tick(24, lambda: main())
 
 main()
 # запускаем работу окна
