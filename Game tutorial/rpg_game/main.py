@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from units.Player import *
 from core.Timer import *
+from core.effects.spray import *
 from units.Enemy import *
 from controls.Button import *
+import sys
+import random
 
 
 class Arrow:
@@ -18,6 +21,7 @@ class Arrow:
 def quit_game():
     print("Quit event")
     quit()
+    sys.exit()
 
 
 class Main:
@@ -39,6 +43,8 @@ class Main:
         self.arrows = []
         self.timer = Timer(screen)
         self.buttons = [Button(screen, "Exit", action=quit_game)]
+        self.effects = []
+        self.effects.append(Spray(screen, 250, 250, random.randint(0, 5)))
 
     def inputs(self, events):
         for event in events:
@@ -124,9 +130,13 @@ class Main:
                     enemy.lose_hp(10)
                     self.arrows.remove(arrow)
                     print("collide")
+                    self.effects.append(Spray(screen, arrow.x, arrow.y, 1))
 
         for button in self.buttons:
             button.update()
+
+        for effect in self.effects:
+            effect.update()
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
@@ -138,6 +148,9 @@ class Main:
         self.timer.render()
         for button in self.buttons:
             button.render()
+        for effect in self.effects:
+            effect.render()
+
         pygame.display.flip()
 
     def main_loop(self):
@@ -149,10 +162,10 @@ class Main:
             self.player.update()
             # self.enemy.update2 = lambda x: x.position[X] + 2 if x.position[X] < 500 else 100
             # self.enemy.position[X] = self.enemy.update2(self.enemy)
+
             self.timer.update()
             self.render()
             self.handle_event()
-
 
 pygame.init()
 pygame.mixer.init()
