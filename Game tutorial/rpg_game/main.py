@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+from controls.ChangeRange import ChangeRange
+from controls.TextBox import TextBox
+from core.effects.boom import Boom
+from core.effects.spray_spring import SpraySpring
+from core.effects.spring import Spring
 from units.Player import *
 from core.Timer import *
 from core.effects.spray import *
@@ -26,25 +31,40 @@ def quit_game():
 
 class Main:
     def __init__(self, screen):
+
+        # core objects
         self.screen = screen
-        self.background = pygame.image.load('./data/background.jpg')
+        self.timer = Timer(screen)
+
         self.running = True
+
+        # game objects
         self.player = Player(screen, './data/man.png')
         self.enemies = []
         self.enemies.append(Skeleton(screen, 400, 400))
         enemy = Skeleton(screen)
         enemy.set_position(300, 350, LEFT)
         self.enemies.append(enemy)
+
+        # resources
+        self.background = pygame.image.load('./data/background.jpg')
         self.image_arrows = [RIGHT, DOWN, LEFT, UP]
         self.image_arrows[RIGHT] = pygame.image.load('./data/arrow_right.png')
         self.image_arrows[DOWN] = pygame.image.load('./data/arrow_down.png')
         self.image_arrows[LEFT] = pygame.image.load('./data/arrow_left.png')
         self.image_arrows[UP] = pygame.image.load('./data/arrow_up.png')
         self.arrows = []
-        self.timer = Timer(screen)
-        self.buttons = [Button(screen, "Exit", action=quit_game)]
+
+        # controls
+        self.controls = []
+        self.controls.append(Button(screen, "Exit", action=quit_game))
+        self.controls.append(TextBox(screen, "Hello world", 250, 50, 120, 32))
+        self.controls.append(ChangeRange(screen, 450, 50, 120, 32))
+
+        # effects
         self.effects = []
-        self.effects.append(Spray(screen, 250, 250, random.randint(0, 5)))
+        self.effects.append(SpraySpring(screen, 250, 250))
+        self.effects.append(Boom(screen, 350, 350))
 
     def inputs(self, events):
         for event in events:
@@ -130,24 +150,29 @@ class Main:
                     enemy.lose_hp(10)
                     self.arrows.remove(arrow)
                     print("collide")
-                    self.effects.append(Spray(screen, arrow.x, arrow.y, 1))
+                    self.effects.append(Spray(screen, arrow.x, arrow.y))
 
-        for button in self.buttons:
-            button.update()
+        for control in self.controls:
+            control.update()
 
         for effect in self.effects:
             effect.update()
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
+
         for arrow in self.arrows:
             self.screen.blit(self.image_arrows[arrow.d], (arrow.x, arrow.y))
+
         for enemy in self.enemies:
             enemy.render()
+
         self.player.render()
         self.timer.render()
-        for button in self.buttons:
-            button.render()
+
+        for control in self.controls:
+            control.render()
+
         for effect in self.effects:
             effect.render()
 
@@ -166,6 +191,7 @@ class Main:
             self.timer.update()
             self.render()
             self.handle_event()
+
 
 pygame.init()
 pygame.mixer.init()

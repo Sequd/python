@@ -5,11 +5,9 @@ from Constants import *
 
 
 class Spray:
-    def __init__(self, screen, x=250, y=250, alive_time=10):
-
-        # [loc, velocity, timer]
+    def __init__(self, screen, x=250, y=250, alive_time=0):
+        # [loc, velocity, timer/radius]
         self.particles = []
-
         self.alive_time = alive_time
         self.x = x
         self.y = y
@@ -22,12 +20,13 @@ class Spray:
         for p in self.particles:
             p[0][0] += p[1][0]
             p[0][1] += p[1][1]
-            p[2] -= 0.2
+            p[2] -= 0.1
             p[1][1] += 0.1
 
-            if p[2] <= 0:
-                self.particles.remove(p)
-        self.alive_time -= 0.1
+        self.particles = [p for p in self.particles if p[2] > 0]
+
+        if self.alive_time > 0:
+            self.alive_time -= 0.1
 
     def render(self):
         for p in self.particles:

@@ -14,7 +14,7 @@ SCREEN_HEIGHT = 600
 
 DRAW_RECT = False
 
-FPS = 30
+FPS = 60  # 30 / 60
 
 RIGHT = 0
 DOWN = 1
