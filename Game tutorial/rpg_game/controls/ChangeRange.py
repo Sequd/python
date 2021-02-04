@@ -19,6 +19,8 @@ class ChangeRange:
         self.controls.append(Button(screen, "down", x=x, y=y, w=32, h=32, action=self.counter_down))
         self.controls.append(TextBox(screen, str(self.counter), x=x + 32, y=y, w=w, h=h))
         self.controls.append(Button(screen, "up", x=x + w + 32, y=y, w=32, h=32, action=self.counter_up))
+        self.inner_w = x + w + 32
+        self.alpha = 255
 
     def counter_down(self):
         self.counter -= self.step
@@ -30,8 +32,18 @@ class ChangeRange:
         self.counter = round(self.counter, 1)
         self.controls[1].update_text(str(self.counter))
 
+    def set_alpha(self, alpha):
+        if self.alpha is not alpha:
+            self.alpha = alpha
+
     def update(self):
+        mouse = pygame.mouse.get_pos()
+        self.set_alpha(150)
+        if self.x + self.inner_w > mouse[0] > self.x and self.y + self.h > mouse[1] > self.y:
+            self.set_alpha(255)
+
         for control in self.controls:
+            control.set_alpha(self.alpha)
             control.update()
 
     def render(self):

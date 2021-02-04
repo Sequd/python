@@ -13,12 +13,23 @@ class TextBox:
         self.screen = screen
         self.font = pygame.font.Font(None, 25)
         self.text = self.font.render(text, True, text_color)
+        self.alpha = 255
+
+    def set_alpha(self, alpha):
+        if self.alpha is not alpha:
+            self.alpha = alpha
 
     def update(self):
-        pass
+        mouse = pygame.mouse.get_pos()
+        self.set_alpha(150)
+        if self.x + self.w > mouse[0] > self.x and self.y + self.h > mouse[1] > self.y:
+            self.set_alpha(255)
 
     def render(self):
-        pygame.draw.rect(self.screen, self.background, [self.x, self.y, self.w, self.h])
+        surf = pygame.Surface((self.w, self.h), pygame.SRCALPHA)
+        surf.fill(self.background)
+        surf.set_alpha(self.alpha)
+        self.screen.blit(surf, (self.x, self.y))
         self.screen.blit(self.text, (self.x, self.y))
 
     def update_text(self, text):

@@ -194,8 +194,8 @@ class Main:
 
 
 pygame.init()
-pygame.mixer.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# pygame.mixer.init()  # pygame module for loading and playing sounds
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.HWSURFACE | pygame.DOUBLEBUF)
 pygame.display.set_caption('rpg game')
 clock = pygame.time.Clock()
 game = Main(screen)

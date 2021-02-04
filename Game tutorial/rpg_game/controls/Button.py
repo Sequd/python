@@ -19,6 +19,11 @@ class Button:
         self.tick_step = 0.1
         self.pressed = False
         self.last_state = [0, 0, 0]
+        self.alpha = 255
+
+    def set_alpha(self, alpha):
+        if self.alpha is not alpha:
+            self.alpha = alpha
 
     def handle_events(self):
         pass
@@ -34,9 +39,12 @@ class Button:
             self.pressed = not self.pressed
             self.tick = self.tick_default
 
-        if self.pressed and self.x + self.w > mouse[0] > self.x and self.y + self.h > mouse[1] > self.y:
-            if self.tick >= self.tick_default:
-                self.action()
+        self.set_alpha(150)
+        if self.x + self.w > mouse[0] > self.x and self.y + self.h > mouse[1] > self.y:
+            self.set_alpha(255)
+            if self.pressed:
+                if self.tick >= self.tick_default:
+                    self.action()
 
         self.tick -= self.tick_step
         if self.tick < 0:
@@ -44,5 +52,10 @@ class Button:
         self.last_state = click
 
     def render(self):
-        pygame.draw.rect(self.screen, GREEN, [self.x, self.y, self.w, self.h])
+        surf = pygame.Surface((self.w, self.h), pygame.SRCALPHA)
+        surf.fill(GREEN)
+        surf.set_alpha(self.alpha)
+        self.screen.blit(surf, (self.x, self.y))
+
+        # draw text
         self.screen.blit(self.text, (self.x, self.y))
