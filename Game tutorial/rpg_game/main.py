@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from controls.ChangeRange import ChangeRange
 from controls.TextBox import TextBox
+from core.Marker import Marker
 from core.effects.boom import Boom
+from core.effects.shine import Shine
 from core.effects.spray_spring import SpraySpring
 from core.effects.spring import Spring
 from units.Player import *
@@ -65,6 +67,10 @@ class Main:
         self.effects = []
         self.effects.append(SpraySpring(screen, 250, 250))
         self.effects.append(Boom(screen, 350, 350))
+        self.effects.append(Shine(screen, 550, 150))
+
+        self.markers = []
+        self.markers.append(Marker(screen, 250, 250))
 
     def inputs(self, events):
         for event in events:
@@ -157,6 +163,8 @@ class Main:
 
         for effect in self.effects:
             effect.update()
+        for marker in self.markers:
+            marker.update()
 
     def render(self):
         self.screen.blit(self.background, (0, 0))
@@ -176,6 +184,9 @@ class Main:
         for effect in self.effects:
             effect.render()
 
+        for marker in self.markers:
+            marker.render()
+
         pygame.display.flip()
 
     def main_loop(self):
@@ -185,9 +196,6 @@ class Main:
             for enemy in self.enemies:
                 enemy.update()
             self.player.update()
-            # self.enemy.update2 = lambda x: x.position[X] + 2 if x.position[X] < 500 else 100
-            # self.enemy.position[X] = self.enemy.update2(self.enemy)
-
             self.timer.update()
             self.render()
             self.handle_event()

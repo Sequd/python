@@ -16,8 +16,6 @@ class Boom:
     def update(self):
         self.x, self.y = pygame.mouse.get_pos()
         if self.alive_time >= 0:
-            # self.particles.append([[self.x, self.y], [random.randint(0, 20) / 10 - 1, random.randint(0, 20) / 10 - 1], 6, (150, random.randint(50, 150), random.randint(50, 100))])
-            # self.particles.append([[self.x, self.y], [random.randint(0, 20) / 10 - 1, random.randint(0, 20) / 10 - 1], random.randint(4, 6), (255, 150, 0)])
             self.particles.append([[self.x, self.y], [random.randint(0, 20) / 10 - 1, random.randint(0, 20) / 10 - 1], 10, (250, 150, 0)])
             self.particles.append([[self.x, self.y], [random.randint(0, 20) / 10 - 1, random.randint(0, 20) / 10 - 1], random.randint(10, 30), (250, 250, 250)])
         for p in self.particles:
