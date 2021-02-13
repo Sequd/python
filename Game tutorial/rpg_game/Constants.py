@@ -4,6 +4,7 @@ WHITE = (255, 255, 255)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+GREY = (128, 128, 128)
 
 # sprite size
 HERO_SPRITE_WIDTH = 64
@@ -14,7 +15,7 @@ SCREEN_HEIGHT = 600
 
 DRAW_RECT = False
 
-FPS = 60  # 30 / 60
+FPS = 30  # 30 / 60
 
 RIGHT = 0
 DOWN = 1

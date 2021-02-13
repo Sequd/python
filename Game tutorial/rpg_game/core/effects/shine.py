@@ -1,7 +1,6 @@
-import pygame
 import random
 
-from Constants import *
+from core.effects.pixel import Pixel
 
 
 class Shine:
@@ -27,23 +26,5 @@ class Shine:
     def render(self):
         for pixel in self.pixels:
             pixel.render()
-
-
-class Pixel:
-    def __init__(self, screen, x=0, y=0, alive_time=0):
-        self.screen = screen
-        self.w = 4
-        self.h = 4
-        self.x = x
-        self.y = y
-        self.alive_time = alive_time
-
-    def update(self):
-        pass
-
-    def render(self):
-        rect0 = pygame.Rect(self.x, self.y, self.w, self.h)
-        pygame.draw.rect(self.screen, WHITE, rect0)
-        self.screen.blit(self.screen, (0, 0))
 
 
