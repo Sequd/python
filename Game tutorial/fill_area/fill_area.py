@@ -22,6 +22,41 @@ def quit_game():
     sys.exit()
 
 
+all_x = 18
+all_y = 24
+dx = 20
+dy = 20
+area_size = (all_x * dx, all_y * dy)
+area_position = (SCREEN_WIDTH / 2 - area_size[0] / 2, SCREEN_HEIGHT / 2 - area_size[1] / 2)
+
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.score = 0
+
+
+class GameProcess:
+    def __init__(self, players):
+        self.players = players
+        self.index = 0
+        self.currentPlayer = self.players[self.index]
+
+    def next_game_step(self):
+        self.next_player()
+        return self.roll_the_dice()
+
+    def next_player(self):
+        self.index = not self.index
+        self.currentPlayer = self.players[self.index]
+        print("Step for", self.currentPlayer.name)
+
+    def roll_the_dice(self):
+        a, b = random.randint(1, 6), random.randint(1, 6)
+        print("Roll the dice:", a, b)
+        return a, b
+
+
 class Main:
     def __init__(self, screen):
 
@@ -32,7 +67,8 @@ class Main:
         self.running = True
 
         # game objects
-        # self.player = Player(screen, './data/man.png')
+        players = (Player("player 1"), Player("player 2"))
+        self.gameProcess = GameProcess(players)
 
         # resources
         # self.background = pygame.image.load('./data/background.jpg')
@@ -58,12 +94,14 @@ class Main:
                     pygame.quit()
 
         mouse = pygame.mouse.get_pos()
-        if 250 < mouse[0] < 550 and 50 < mouse[1] < 550:
+        if area_position[0] < mouse[0] < area_position[0] + area_size[0] \
+                and area_position[1] < mouse[1] < area_position[1] + area_size[1]:
             if len(self.effects) == 0:
-                print("draw")
-                self.effects.append(Area(screen, 150, 150, 250, 250))
+                # print("draw")
+                a, b = self.gameProcess.next_game_step()
+                self.effects.append(Area(screen, BLUE, area_position[0], area_position[1], a * dx, b * dy))
         elif len(self.effects) > 0:
-            print("clear")
+            # print("clear")
             self.effects.clear()
 
     def handle_event(self):
@@ -79,13 +117,7 @@ class Main:
             effect.update()
 
     def draw_area(self):
-        all_x = 18
-        all_y = 24
-        dx = 20
-        dy = 20
-        size = (all_x * dx, all_y * dy)
-        size = (size[0] + 1, size[1] + 1)
-        surf = pygame.Surface(size, pygame.SRCALPHA)
+        surf = pygame.Surface((area_size[0] + 1, area_size[1] + 1), pygame.SRCALPHA)
         surf.fill(WHITE)
         surf.set_alpha(200)
 
@@ -104,8 +136,7 @@ class Main:
             y2 = y * dy
 
             pygame.draw.line(surf, BLACK, [x1, y1], [x2, y2])
-        area_size = (SCREEN_WIDTH / 2 - size[0] / 2, SCREEN_HEIGHT / 2 - size[1] / 2)
-        self.screen.blit(surf, area_size)
+        self.screen.blit(surf, area_position)
 
     def render(self):
         rect0 = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
