@@ -14,6 +14,7 @@ from units.Enemy import *
 from controls.Button import *
 import sys
 import random
+import numpy
 
 
 def quit_game():
@@ -99,7 +100,17 @@ class Main:
             if len(self.effects) == 0:
                 # print("draw")
                 a, b = self.gameProcess.next_game_step()
-                self.effects.append(Area(screen, BLUE, area_position[0], area_position[1], a * dx, b * dy))
+                # x = int((mouse[0] - area_position[0]) / dx)
+                # y = int((mouse[1] - area_position[1]) / dy)
+                diff = (numpy.array(mouse) - numpy.array(area_position)) / numpy.array((dx, dy))
+                diff = numpy.floor(diff)
+                print("diff:", diff)
+                # diff2 = (numpy.array(mouse) - numpy.array(area_position))
+                # diff2 = numpy.rint(diff2)
+                # print("diff2:", numpy.rint(diff2))
+                x, y = area_position[0] + diff[0] * dx, area_position[1] + diff[1] * dy
+                print("target cell:", x, y)
+                self.effects.append(Area(screen, BLUE, x, y, a * dx, b * dy))
         elif len(self.effects) > 0:
             # print("clear")
             self.effects.clear()
