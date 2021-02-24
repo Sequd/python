@@ -12,7 +12,7 @@ class TextBox:
         self.h = h
         self.screen = screen
         self.font = pygame.font.Font(None, 25)
-        self.text = self.font.render(text, True, text_color)
+        self.text_render = self.font.render(text, True, text_color)
         self.alpha = 255
 
     def set_alpha(self, alpha):
@@ -30,7 +30,7 @@ class TextBox:
         surf.fill(self.background)
         surf.set_alpha(self.alpha)
         self.screen.blit(surf, (self.x, self.y))
-        self.screen.blit(self.text, (self.x, self.y))
+        self.screen.blit(self.text_render, (self.x, self.y))
 
     def update_text(self, text):
-        self.text = self.font.render(text, True, self.text_color)
+        self.text_render = self.font.render(text, True, self.text_color)

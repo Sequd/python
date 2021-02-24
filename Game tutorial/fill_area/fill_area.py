@@ -31,10 +31,16 @@ area_size = (all_x * dx, all_y * dy)
 area_position = (SCREEN_WIDTH / 2 - area_size[0] / 2, SCREEN_HEIGHT / 2 - area_size[1] / 2)
 
 
+def namestr(obj):
+    namespace = globals()
+    return [name for name in namespace if namespace[name] is obj]
+
+
 class Player:
-    def __init__(self, name):
+    def __init__(self, name, color):
         self.name = name
         self.score = 0
+        self.color = color
 
 
 class GameProcess:
@@ -42,6 +48,8 @@ class GameProcess:
         self.players = players
         self.index = 0
         self.currentPlayer = self.players[self.index]
+        self.dice = (0, 0)
+        self.roll_the_dice()
 
     def next_game_step(self):
         self.next_player()
@@ -50,12 +58,23 @@ class GameProcess:
     def next_player(self):
         self.index = not self.index
         self.currentPlayer = self.players[self.index]
-        print("Step for", self.currentPlayer.name)
+        print(self.currentPlayer.name, namestr(self.currentPlayer.color), "Score:", self.currentPlayer.score)
 
     def roll_the_dice(self):
         a, b = random.randint(1, 6), random.randint(1, 6)
-        print("Roll the dice:", a, b)
+        self.dice = (a, b)
+        print("dice []:", a, b)
         return a, b
+
+    def set_score(self):
+        self.currentPlayer.score += self.dice[0] * self.dice[1]
+
+    def reset(self):
+        for c in self.players:
+            c.score = 0
+        self.index = 0
+        self.currentPlayer = self.players[self.index]
+        self.roll_the_dice()
 
 
 class Main:
@@ -66,11 +85,12 @@ class Main:
         self.timer = Timer(screen)
 
         self.running = True
-
+        self.mouse_pressed = False
+        self.max_effects = 0
         # game objects
-        players = (Player("player 1"), Player("player 2"))
+        players = (Player("player 1", BLUE), Player("player 2", GREEN))
         self.gameProcess = GameProcess(players)
-
+        self.all_areas = []
         # resources
         # self.background = pygame.image.load('./data/background.jpg')
 
@@ -78,10 +98,19 @@ class Main:
         self.controls = []
         # self.controls.append(Button(screen, "Exit", action=quit_game))
         self.controls.append(TextBox(screen, "Заполните поле", SCREEN_WIDTH / 2 - 60, 20, 132, 20))
+        self.controls.append(Button(screen, "Exit", action=quit_game, y=50))
+        self.controls.append(Button(screen, "Restart", action=self.restart, y=100))
+        self.controls.append(TextBox(screen, self.gameProcess.currentPlayer.name, SCREEN_WIDTH / 2 - 60, 40, 132, 20))
 
         # effects
         self.effects = []
         # self.effects.append(Shine(screen, 550, 150))
+
+    def restart(self):
+        self.gameProcess.reset()
+        self.all_areas = []
+        self.max_effects = 0
+        self.effects.clear()
 
     def inputs(self, events):
         for event in events:
@@ -95,25 +124,38 @@ class Main:
                     pygame.quit()
 
         mouse = pygame.mouse.get_pos()
-        if area_position[0] < mouse[0] < area_position[0] + area_size[0] \
-                and area_position[1] < mouse[1] < area_position[1] + area_size[1]:
-            if len(self.effects) == 0:
-                # print("draw")
-                a, b = self.gameProcess.next_game_step()
-                # x = int((mouse[0] - area_position[0]) / dx)
-                # y = int((mouse[1] - area_position[1]) / dy)
-                diff = (numpy.array(mouse) - numpy.array(area_position)) / numpy.array((dx, dy))
-                diff = numpy.floor(diff)
-                print("diff:", diff)
-                # diff2 = (numpy.array(mouse) - numpy.array(area_position))
-                # diff2 = numpy.rint(diff2)
-                # print("diff2:", numpy.rint(diff2))
-                x, y = area_position[0] + diff[0] * dx, area_position[1] + diff[1] * dy
-                print("target cell:", x, y)
-                self.effects.append(Area(screen, BLUE, x, y, a * dx, b * dy))
-        elif len(self.effects) > 0:
-            # print("clear")
-            self.effects.clear()
+        in_area = area_position[0] < mouse[0] < area_position[0] + area_size[0] \
+                  and area_position[1] < mouse[1] < area_position[1] + area_size[1]
+        if in_area:
+            diff = (numpy.array(mouse) - numpy.array(area_position)) / numpy.array((dx, dy))
+            diff = numpy.floor(diff)
+            x, y = area_position[0] + diff[0] * dx, area_position[1] + diff[1] * dy
+            if len(self.effects) == self.max_effects:
+                a, b = self.gameProcess.dice
+                print('--- add area:', a, b)
+                self.effects.append(Area(screen, self.gameProcess.currentPlayer.color, x, y, a * dx, b * dy))
+            click = pygame.mouse.get_pressed(3)
+            if click[0] != self.mouse_pressed:
+                self.mouse_pressed = not self.mouse_pressed
+                if self.mouse_pressed and self.effects[-1].color != RED:
+                    self.effects[-1].alpha = 200
+                    self.all_areas.append(self.effects[-1].rect())
+                    self.gameProcess.set_score()
+                    self.gameProcess.next_game_step()
+                    self.controls[-1].update_text(self.gameProcess.currentPlayer.name)
+                    self.max_effects += 1
+            if not self.mouse_pressed:
+                self.effects[-1].x = x
+                self.effects[-1].y = y
+                for eff in self.effects[:-1]:
+                    if self.effects[-1].rect().colliderect(eff.rect()):
+                        self.effects[-1].color = RED
+                        break
+                    else:
+                        self.effects[-1].color = self.gameProcess.currentPlayer.color
+
+        elif len(self.effects) > self.max_effects:
+            del self.effects[-1]
 
     def handle_event(self):
         self.inputs(pygame.event.get())
