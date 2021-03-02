@@ -23,4 +23,5 @@ class Area:
         surf = pygame.Surface((self.w, self.h), pygame.SRCALPHA)
         surf.fill(self.color)
         surf.set_alpha(self.alpha)
+        # pygame.draw.line(self.screen, (0, 0, 0), (self.x, self.y + self.h - 2), (self.x + self.w, self.y + self.h - 2), 2)
         self.screen.blit(surf, (self.x, self.y))

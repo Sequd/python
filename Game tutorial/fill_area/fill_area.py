@@ -32,6 +32,7 @@ area_position = (SCREEN_WIDTH / 2 - area_size[0] / 2, SCREEN_HEIGHT / 2 - area_s
 
 
 def namestr(obj):
+    """Return name of variable from global scope"""
     namespace = globals()
     return [name for name in namespace if namespace[name] is obj]
 
@@ -52,18 +53,20 @@ class GameProcess:
         self.roll_the_dice()
 
     def next_game_step(self):
-        self.next_player()
+        """Processed next game step and roll the dice"""
+        self.next_current_player()
         return self.roll_the_dice()
 
-    def next_player(self):
+    def next_current_player(self):
+        """Select next current player"""
         self.index = not self.index
         self.currentPlayer = self.players[self.index]
-        print(self.currentPlayer.name, namestr(self.currentPlayer.color), "Score:", self.currentPlayer.score)
+        # print(self.currentPlayer.name, namestr(self.currentPlayer.color), "Score:", self.currentPlayer.score)
 
     def roll_the_dice(self):
-        a, b = random.randint(1, 6), random.randint(1, 6)
+        a, b = 1, 1  # random.randint(1, 6), random.randint(1, 6)
         self.dice = (a, b)
-        print("dice []:", a, b)
+        print("dice:", a, b)
         return a, b
 
     def set_score(self):
@@ -87,16 +90,22 @@ class Main:
         self.running = True
         self.mouse_pressed = False
         self.max_effects = 0
+
         # game objects
         players = (Player("player 1", BLUE), Player("player 2", GREEN))
         self.gameProcess = GameProcess(players)
         self.all_areas = []
+        self.all_cells = numpy.arange(all_x * all_y)
+        self.players_cell = {0: [], 1: []}
+        # print(self.players_cell)
+        # print(self.all_cells)
+        # print(self.all_cells.reshape(all_x, all_y))
+
         # resources
         # self.background = pygame.image.load('./data/background.jpg')
 
         # controls
         self.controls = []
-        # self.controls.append(Button(screen, "Exit", action=quit_game))
         self.controls.append(TextBox(screen, "Заполните поле", SCREEN_WIDTH / 2 - 60, 20, 132, 20))
         self.controls.append(Button(screen, "Exit", action=quit_game, y=50))
         self.controls.append(Button(screen, "Restart", action=self.restart, y=100))
@@ -106,9 +115,33 @@ class Main:
         self.effects = []
         # self.effects.append(Shine(screen, 550, 150))
 
+    def rect_to_cells(self, rect: pygame.Rect):
+        start_cell = self.get_number_cell((rect.x, rect.y))
+        cells = numpy.arange(all_x * all_y).reshape(all_y, all_x)
+        c1, r1 = int(start_cell[0]), int(start_cell[1])
+        cells = cells[r1:r1 + int(rect.h / dy), c1:c1 + int(rect.w / dx)]
+        # print('array:', cells.flatten())
+        return cells.flatten()
+
+    def rect_to_cells_large(self, rect: pygame.Rect):
+        start_cell = self.get_number_cell((rect.x, rect.y))
+        cells = numpy.arange(all_x * all_y).reshape(all_y, all_x)
+        c1, r1 = int(start_cell[0]), int(start_cell[1])
+        r1, r2 = (r1 - 1, r1 + 1) if r1 - 1 >= 0 else (0, r1 + 1)
+        # print("r1, r2", r1, r2)
+        # c1 = c1 if c1 - 1 >= 0 else 0
+        c1, c2 = (c1 - 1, c1 + 1) if c1 - 1 >= 0 else (0, c1 + 1)
+        cells = cells[r1:r2 + int(rect.h / dy), c1:c2 + int(rect.w / dx)]
+        # print(r1, r2 + int(rect.h / dy), c1, c1 + int(rect.w / dx) + 1)
+        # print(cells)
+        # print('large array:', cells.flatten())
+        return cells.flatten()
+
     def restart(self):
+        """Reset game state and clean game objects"""
         self.gameProcess.reset()
         self.all_areas = []
+        self.players_cell = {0: [], 1: []}
         self.max_effects = 0
         self.effects.clear()
 
@@ -123,44 +156,69 @@ class Main:
                     self.running = False
                     pygame.quit()
 
+        # mouse processed
         mouse = pygame.mouse.get_pos()
         in_area = area_position[0] < mouse[0] < area_position[0] + area_size[0] \
                   and area_position[1] < mouse[1] < area_position[1] + area_size[1]
         if in_area:
-            diff = (numpy.array(mouse) - numpy.array(area_position)) / numpy.array((dx, dy))
-            diff = numpy.floor(diff)
-            x, y = area_position[0] + diff[0] * dx, area_position[1] + diff[1] * dy
+            cell = self.get_number_cell(mouse)
+            x, y = area_position[0] + cell[0] * dx, area_position[1] + cell[1] * dy
             if len(self.effects) == self.max_effects:
                 a, b = self.gameProcess.dice
-                print('--- add area:', a, b)
+                # print('--- add area:', a, b)
                 self.effects.append(Area(screen, self.gameProcess.currentPlayer.color, x, y, a * dx, b * dy))
+
+            # click
             click = pygame.mouse.get_pressed(3)
+
             if click[0] != self.mouse_pressed:
                 self.mouse_pressed = not self.mouse_pressed
                 if self.mouse_pressed and self.effects[-1].color != RED:
+                    # Click and next step
                     self.effects[-1].alpha = 200
                     self.all_areas.append(self.effects[-1].rect())
+                    cells = self.rect_to_cells_large(self.effects[-1].rect())
+                    self.players_cell[self.gameProcess.index] += list(cells)
                     self.gameProcess.set_score()
                     self.gameProcess.next_game_step()
                     self.controls[-1].update_text(self.gameProcess.currentPlayer.name)
                     self.max_effects += 1
+
             if not self.mouse_pressed:
+
+                # Move selected place
                 self.effects[-1].x = x
                 self.effects[-1].y = y
+                collise = set(self.players_cell[self.gameProcess.index]) & set(
+                    self.rect_to_cells(self.effects[-1].rect()))
+
                 for eff in self.effects[:-1]:
                     if self.effects[-1].rect().colliderect(eff.rect()):
                         self.effects[-1].color = RED
                         break
                     else:
                         self.effects[-1].color = self.gameProcess.currentPlayer.color
+                if len(collise) > 0:
+                    self.effects[-1].color = self.gameProcess.currentPlayer.color
+                    print(set(self.players_cell[self.gameProcess.index]))
+                    print(set(self.rect_to_cells(self.effects[-1].rect())))
+                    print(len(collise) > 0)
+                # else:
+                # self.effects[-1].color = RED
 
         elif len(self.effects) > self.max_effects:
             del self.effects[-1]
+
+    def get_number_cell(self, coordinate):
+        cell = (numpy.array(coordinate) - numpy.array(area_position)) / numpy.array((dx, dy))
+        cell = numpy.floor(cell)
+        return cell
 
     def handle_event(self):
         self.inputs(pygame.event.get())
 
     def update(self):
+        """Update all game elements"""
         self.timer.update()
 
         for control in self.controls:
@@ -170,17 +228,19 @@ class Main:
             effect.update()
 
     def draw_area(self):
+        """ Draw grid and area """
         surf = pygame.Surface((area_size[0] + 1, area_size[1] + 1), pygame.SRCALPHA)
         surf.fill(WHITE)
         surf.set_alpha(200)
 
+        # todo: optimization, rewrite to one circle
         for x in range(all_x + 1):
             x1 = x * dx
             x2 = x * dx
             y1 = 0
             y2 = dy * all_y
 
-            pygame.draw.line(surf, BLACK, [x1, y1], [x2, y2])
+            pygame.draw.line(surf, GREY, [x1, y1], [x2, y2])
 
         for y in range(all_y + 1):
             x1 = 0
@@ -188,14 +248,16 @@ class Main:
             y1 = y * dy
             y2 = y * dy
 
-            pygame.draw.line(surf, BLACK, [x1, y1], [x2, y2])
+            pygame.draw.line(surf, GREY, [x1, y1], [x2, y2])
         self.screen.blit(surf, area_position)
 
     def render(self):
-        rect0 = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+        """Render all game elements"""
 
+        # background
+        rect0 = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
         pygame.draw.rect(self.screen, GREY, rect0)
-        # self.screen.blit(pygame.Rect(), (0, 0))
+
         self.draw_area()
         self.timer.render()
 
@@ -204,6 +266,7 @@ class Main:
 
         for effect in self.effects:
             effect.render()
+
         pygame.display.flip()
 
     def main_loop(self):
