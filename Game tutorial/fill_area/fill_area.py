@@ -64,7 +64,7 @@ class GameProcess:
         # print(self.currentPlayer.name, namestr(self.currentPlayer.color), "Score:", self.currentPlayer.score)
 
     def roll_the_dice(self):
-        a, b = 1, 1  # random.randint(1, 6), random.randint(1, 6)
+        a, b = random.randint(1, 6), random.randint(1, 6)
         self.dice = (a, b)
         print("dice:", a, b)
         return a, b
@@ -111,9 +111,44 @@ class Main:
         self.controls.append(Button(screen, "Restart", action=self.restart, y=100))
         self.controls.append(TextBox(screen, self.gameProcess.currentPlayer.name, SCREEN_WIDTH / 2 - 60, 40, 132, 20))
 
+        # players score
+        for index, player in enumerate(self.gameProcess.players):
+            shift_y = index * 24
+            self.controls.append(TextBox(screen, player.name + " :", w=80, h=24, x=50, y=200 + shift_y))
+            self.controls.append(TextBox(screen, str(player.score), w=64, h=24, x=130, y=200 + shift_y))
+
         # effects
         self.effects = []
         # self.effects.append(Shine(screen, 550, 150))
+        self.set_start_position()
+
+    def set_start_position(self):
+
+        # todo: refactoring
+
+        # set for player 1
+        a, b = self.gameProcess.dice
+        cell = (0, 0)
+        x, y = area_position[0] + cell[0] * dx, area_position[1] + cell[1] * dy
+        area = Area(screen, self.gameProcess.currentPlayer.color, x, y, a * dx, b * dy)
+        self.effects.append(area)
+        cells = self.rect_to_cells_large(area.rect())
+        self.players_cell[self.gameProcess.index] += list(cells)
+        self.gameProcess.set_score()
+        self.gameProcess.next_game_step()
+        self.max_effects += 1
+
+        # set for player 2
+        a, b = self.gameProcess.dice
+        cell = (all_x - a, all_y - b)
+        x, y = area_position[0] + cell[0] * dx, area_position[1] + cell[1] * dy
+        area = Area(screen, self.gameProcess.currentPlayer.color, x, y, a * dx, b * dy)
+        self.effects.append(area)
+        cells = self.rect_to_cells_large(area.rect())
+        self.players_cell[self.gameProcess.index] += list(cells)
+        self.gameProcess.set_score()
+        self.gameProcess.next_game_step()
+        self.max_effects += 1
 
     def rect_to_cells(self, rect: pygame.Rect):
         start_cell = self.get_number_cell((rect.x, rect.y))
@@ -171,12 +206,13 @@ class Main:
             # click
             click = pygame.mouse.get_pressed(3)
 
+            # todo: refactoring
             if click[0] != self.mouse_pressed:
                 self.mouse_pressed = not self.mouse_pressed
                 if self.mouse_pressed and self.effects[-1].color != RED:
                     # Click and next step
                     self.effects[-1].alpha = 200
-                    self.all_areas.append(self.effects[-1].rect())
+                    # self.all_areas.append(self.effects[-1].rect())
                     cells = self.rect_to_cells_large(self.effects[-1].rect())
                     self.players_cell[self.gameProcess.index] += list(cells)
                     self.gameProcess.set_score()
@@ -200,11 +236,11 @@ class Main:
                         self.effects[-1].color = self.gameProcess.currentPlayer.color
                 if len(collise) > 0:
                     self.effects[-1].color = self.gameProcess.currentPlayer.color
-                    print(set(self.players_cell[self.gameProcess.index]))
-                    print(set(self.rect_to_cells(self.effects[-1].rect())))
-                    print(len(collise) > 0)
-                # else:
-                # self.effects[-1].color = RED
+                    # print(set(self.players_cell[self.gameProcess.index]))
+                    # print(set(self.rect_to_cells(self.effects[-1].rect())))
+                    # print(len(collise) > 0)
+                else:
+                    self.effects[-1].color = RED
 
         elif len(self.effects) > self.max_effects:
             del self.effects[-1]

@@ -3,7 +3,7 @@ from Constants import *
 
 
 class TextBox:
-    def __init__(self, screen, text, x=150, y=50, w=64, h=32, background=BLACK, text_color=WHITE):
+    def __init__(self, screen, text, x=150, y=50, w=64, h=32, background=BLACK, text_color=WHITE, alpha=255):
         self.text_color = text_color
         self.background = background
         self.x = x
@@ -13,7 +13,7 @@ class TextBox:
         self.screen = screen
         self.font = pygame.font.Font(None, 25)
         self.text_render = self.font.render(text, True, text_color)
-        self.alpha = 255
+        self.alpha = alpha
 
     def set_alpha(self, alpha):
         if self.alpha is not alpha:
@@ -21,7 +21,7 @@ class TextBox:
 
     def update(self):
         mouse = pygame.mouse.get_pos()
-        self.set_alpha(150)
+        # self.set_alpha(150)
         if self.x + self.w > mouse[0] > self.x and self.y + self.h > mouse[1] > self.y:
             self.set_alpha(255)
 
