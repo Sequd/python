@@ -11,6 +11,7 @@ from units.Player import *
 from core.Timer import *
 from core.effects.spray import *
 from units.Enemy import *
+from core.SpriteSheet import *
 from controls.Button import *
 import sys
 import random
@@ -112,15 +113,31 @@ class Main:
         self.controls.append(TextBox(screen, self.gameProcess.currentPlayer.name, SCREEN_WIDTH / 2 - 60, 40, 132, 20))
 
         # players score
+        self.score_controls = []
         for index, player in enumerate(self.gameProcess.players):
             shift_y = index * 24
             self.controls.append(TextBox(screen, player.name + " :", w=80, h=24, x=50, y=200 + shift_y))
-            self.controls.append(TextBox(screen, str(player.score), w=64, h=24, x=130, y=200 + shift_y))
+            self.score_controls.append(TextBox(screen, str(player.score), w=64, h=24, x=130, y=200 + shift_y))
 
         # effects
         self.effects = []
         # self.effects.append(Shine(screen, 550, 150))
         self.set_start_position()
+
+        sprite_sheet = SpriteSheet("dice.png")
+        self.dice_frames = []
+        x, y = 0, 0  # start position on sprite sheet
+        # Load all the right facing images into a list
+        for m in range(0, 2):
+            x = 0
+            for n in range(0, 3):
+                image = sprite_sheet.get_image(x, y, 64, 64)
+                self.dice_frames.append(image)
+                x += 65
+            y += 64
+
+        self.dice_image_1 = self.dice_frames[self.gameProcess.dice[0]]
+        self.dice_image_2 = self.dice_frames[self.gameProcess.dice[1]]
 
     def set_start_position(self):
 
@@ -217,7 +234,10 @@ class Main:
                     self.players_cell[self.gameProcess.index] += list(cells)
                     self.gameProcess.set_score()
                     self.gameProcess.next_game_step()
-                    self.controls[-1].update_text(self.gameProcess.currentPlayer.name)
+                    self.dice_image_1 = self.dice_frames[self.gameProcess.dice[0] - 1]
+                    self.dice_image_2 = self.dice_frames[self.gameProcess.dice[1] - 1]
+                    self.controls[3].update_text(self.gameProcess.currentPlayer.name)
+                    self.score_controls[self.gameProcess.index].update_text(str(self.gameProcess.currentPlayer.score))
                     self.max_effects += 1
 
             if not self.mouse_pressed:
@@ -260,6 +280,9 @@ class Main:
         for control in self.controls:
             control.update()
 
+        for control in self.score_controls:
+            control.update()
+
         for effect in self.effects:
             effect.update()
 
@@ -300,8 +323,14 @@ class Main:
         for control in self.controls:
             control.render()
 
+        for control in self.score_controls:
+            control.render()
+
         for effect in self.effects:
             effect.render()
+
+        self.screen.blit(self.dice_image_1, (640, 64))
+        self.screen.blit(self.dice_image_2, (640, 64 * 2))
 
         pygame.display.flip()
 
