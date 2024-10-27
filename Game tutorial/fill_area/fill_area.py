@@ -20,7 +20,7 @@ import numpy
 
 def quit_game():
     print("Quit event")
-    quit()
+    # quit()
     sys.exit()
 
 
