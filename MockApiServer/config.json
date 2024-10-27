@@ -1,0 +1,53 @@
+{
+    "host": "localhost",
+    "port": 8000,
+    "endpoints": [
+        {
+            "path": "/api/users",
+            "methods": [
+                "GET",
+                "POST"
+            ],
+            "required_params": [
+                "id"
+            ],
+            "response": {
+                "id": "$id",
+                "name": "John Doe",
+                "email": "john@example.com"
+            }
+        },
+        {
+            "path": "/api/products",
+            "methods": [
+                "GET"
+            ],
+            "required_params": [
+                "category"
+            ],
+            "response": {
+                "category": "$category",
+                "products": [
+                    {
+                        "id": 1,
+                        "name": "Product 1",
+                        "price": 99.99
+                    },
+                    {
+                        "id": 2,
+                        "name": "Product 2",
+                        "price": 149.99
+                    }
+                ]
+            }
+        },
+        {
+            "path": "/books",
+            "methods": [
+                "GET"
+            ],
+            "required_params": [],
+            "response": {}
+        }
+    ]
+}

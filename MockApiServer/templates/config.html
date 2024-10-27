@@ -1,0 +1,103 @@
+<!-- templates/config.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Mock API Config</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Настройка маршрутов Mock API</h2>
+
+    <table id="endpointsTable">
+        <thead>
+            <tr>
+                <th>Путь</th>
+                <th>Методы</th>
+                <th>Обязательные параметры</th>
+                <th>Ответ</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for endpoint in endpoints %}
+            <tr>
+                <td>{{ endpoint.path }}</td>
+                <td>{{ endpoint.methods | join(", ") }}</td>
+                <td>{{ endpoint.required_params | join(", ") }}</td>
+                <td>{{ endpoint.response }}</td>
+                <td>
+                    <a href="{{ endpoint.path }}" target="_blank">Тестировать</a>
+                    <button onclick="deleteEndpoint('{{ endpoint.path }}')">Удалить</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Добавить/Обновить маршрут</h3>
+    <form id="endpointForm">
+        <label>Путь:</label>
+        <input type="text" id="path" required><br><br>
+
+        <label>Методы:</label>
+        <select id="methods" multiple>
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+        </select><br><br>
+
+        <label>Обязательные параметры (через запятую):</label>
+        <input type="text" id="requiredParams"><br><br>
+
+        <label>Ответ (JSON):</label>
+        <textarea id="response" placeholder='например, {"id": "$id", "name": "John Doe"}'></textarea><br><br>
+
+        <button type="button" onclick="addOrUpdateEndpoint()">Добавить/Обновить маршрут</button>
+    </form>
+
+    <script>
+        async function addOrUpdateEndpoint() {
+            const path = document.getElementById("path").value;
+            const methods = Array.from(document.getElementById("methods").selectedOptions).map(opt => opt.value);
+            const requiredParams = document.getElementById("requiredParams").value.split(',').map(p => p.trim()).filter(p => p);
+            const response = JSON.parse(document.getElementById("response").value || "{}");
+
+            const endpointData = {
+                path: path,
+                methods: methods,
+                required_params: requiredParams,
+                response: response
+            };
+
+            const responseApi = await fetch('/api/endpoints', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(endpointData)
+            });
+            const result = await responseApi.json();
+            if (result.success) {
+                alert("Маршрут успешно добавлен или обновлен!");
+                location.reload();
+            } else {
+                alert("Ошибка: " + result.error);
+            }
+        }
+
+        async function deleteEndpoint(path) {
+            const response = await fetch(`/api/endpoints${path}`, { method: 'DELETE' });
+            const result = await response.json();
+            if (result.success) {
+                alert(`Маршрут ${result.deleted_path} удалён.`);
+                location.reload();
+            } else {
+                alert("Ошибка при удалении маршрута.");
+            }
+        }
+    </script>
+</body>
+</html>
