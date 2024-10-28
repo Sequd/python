@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock API Configuration</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --secondary-color: #6c757d;
+            --border-color: #ddd;
+            --background-light: #f5f5f5;
+            --error-color: #dc3545;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--background-light);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .error {
+            color: var(--error-color);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled {
+            background: var(--secondary-color);
+            cursor: not-allowed;
+        }
+
+        .btn-primary { background: var(--primary-color); }
+        .btn-success { background: var(--success-color); }
+        .btn-danger { background: var(--danger-color); }
+        .btn-secondary { background: var(--secondary-color); }
+
+        .buttons-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .endpoint-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .endpoint-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .edit-form {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--background-light);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mock API Configuration</h1>
+
+        <div class="card">
+            <h2>Add New Endpoint</h2>
+            <form id="endpointForm" novalidate>
+                <div class="form-group">
+                    <label for="path">Path:</label>
+                    <input type="text" id="path" class="form-control" required placeholder="/api/resource">
+                    <div class="error" id="pathError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="methods">HTTP Methods (comma-separated):</label>
+                    <input type="text" id="methods" class="form-control" required placeholder="GET,POST">
+                    <div class="error" id="methodsError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="required_params">Required Parameters (comma-separated):</label>
+                    <input type="text" id="required_params" class="form-control" placeholder="id,name">
+                    <div class="error" id="paramsError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="response">Response Template (JSON):</label>
+                    <textarea id="response" class="form-control" rows="5" required
+                        placeholder='{"id": "$id", "name": "$name"}'></textarea>
+                    <div class="error" id="responseError"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Endpoint</button>
+            </form>
+        </div>
+
+        <button id="refreshBtn" class="btn btn-secondary">Refresh Endpoints List</button>
+
+        <div class="card">
+            <h2>Existing Endpoints</h2>
+            <div id="endpointsList" class="endpoint-list"></div>
+        </div>
+    </div>
+
+    <script>
+        class EndpointValidator {
+            static validate(formData) {
+                const errors = {};
+
+                // Path validation
+                if (!formData.path) {
+                    errors.path = 'Path is required';
+                } else if (!formData.path.startsWith('/')) {
+                    errors.path = 'Path must start with /';
+                }
+
+                // Methods validation
+                if (!formData.methods?.length) {
+                    errors.methods = 'At least one HTTP method is required';
+                } else {
+                    const validMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+                    const invalidMethods = formData.methods
+                        .filter(m => !validMethods.includes(m.toUpperCase()));
+                    if (invalidMethods.length) {
+                        errors.methods = `Invalid HTTP methods: ${invalidMethods.join(', ')}`;
+                    }
+                }
+
+                // Response validation
+                if (!formData.response) {
+                    errors.response = 'Response template is required';
+                }
+
+                return { isValid: Object.keys(errors).length === 0, errors };
+            }
+        }
+
+        class EndpointService {
+            static async getEndpoints() {
+                const response = await fetch('/api/endpoints');
+                return response.json();
+            }
+
+            static async createEndpoint(endpoint) {
+                const response = await fetch('/api/endpoints', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(endpoint)
+                });
+                return response.ok;
+            }
+
+            static async updateEndpoint(path, endpoint) {
+                const response = await fetch(`/api/endpoints/${encodeURIComponent(path)}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(endpoint)
+                });
+                return response.ok;
+            }
+
+            static async deleteEndpoint(path) {
+                const response = await fetch(`/api/endpoints?path=${encodeURIComponent(path)}`, {
+                    method: 'DELETE'
+                });
+                return response.ok;
+            }
+
+            static async testEndpoint(path, method, body) {
+                const response = await fetch(path, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: method !== 'GET' ? body : undefined
+                });
+                return response.json();
+            }
+        }
+
+        class EndpointUI {
+            constructor() {
+                this.bindEvents();
+                this.loadEndpoints();
+            }
+
+            bindEvents() {
+                document.getElementById('endpointForm').addEventListener('submit', e => this.handleSubmit(e));
+                document.getElementById('refreshBtn').addEventListener('click', () => this.loadEndpoints());
+
+                ['path', 'methods', 'response'].forEach(field => {
+                    document.getElementById(field)?.addEventListener('input', () => this.validateForm());
+                });
+            }
+
+            async loadEndpoints() {
+                const endpoints = await EndpointService.getEndpoints();
+                const list = document.getElementById('endpointsList');
+                list.innerHTML = endpoints.map(endpoint => this.createEndpointHtml(endpoint)).join('');
+            }
+
+            createEndpointHtml(endpoint) {
+                return `
+                    <div class="endpoint-item" data-path="${endpoint.path}">
+                        <h3>${endpoint.path}</h3>
+                        <p>Methods: ${endpoint.methods.join(', ')}</p>
+                        <p>Required Parameters: ${endpoint.required_params.join(', ') || 'None'}</p>
+                        <p>Response Template: ${JSON.stringify(endpoint.response, null, 2)}</p>
+                        <div class="buttons-group">
+                            <button onclick="ui.testEndpoint('${endpoint.path}')"
+                                class="btn btn-secondary">Test</button>
+                            <button onclick="ui.editEndpoint('${endpoint.path}')"
+                                class="btn btn-success">Edit</button>
+                            <button onclick="ui.deleteEndpoint('${endpoint.path}')"
+                                class="btn btn-danger">Delete</button>
+                        </div>
+                        <div id="edit-form-${endpoint.path.replace(/\//g, '-')}"
+                            class="edit-form" style="display: none;"></div>
+                    </div>
+                `;
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+                if (!this.validateForm()) return;
+
+                const endpoint = this.getFormData();
+                if (await EndpointService.createEndpoint(endpoint)) {
+                    document.getElementById('endpointForm').reset();
+                    this.loadEndpoints();
+                    alert('Endpoint added successfully');
+                } else {
+                    alert('Failed to add endpoint');
+                }
+            }
+
+            getFormData() {
+                return {
+                    path: document.getElementById('path').value.trim(),
+                    methods: document.getElementById('methods').value.split(',').map(m => m.trim().toUpperCase()),
+                    required_params: document.getElementById('required_params').value
+                        ? document.getElementById('required_params').value.split(',').map(p => p.trim())
+                        : [],
+                    response: JSON.parse(document.getElementById('response').value)
+                };
+            }
+
+            validateForm() {
+                const { isValid, errors } = EndpointValidator.validate(this.getFormData());
+                this.displayErrors(errors);
+                return isValid;
+            }
+
+            displayErrors(errors) {
+                ['path', 'methods', 'params', 'response'].forEach(field => {
+                    const input = document.getElementById(field);
+                    const errorDiv = document.getElementById(`${field}Error`);
+                    if (errors[field]) {
+                        errorDiv.textContent = errors[field];
+                        input?.classList.add('error');
+                    } else {
+                        errorDiv.textContent = '';
+                        input?.classList.remove('error');
+                    }
+                });
+            }
+
+            async testEndpoint(path) {
+                const endpoint = await this.getEndpointData(path);
+                if (!endpoint) return;
+
+                const method = prompt('Enter HTTP method:', endpoint.methods[0]);
+                if (!method) return;
+
+                const body = method !== 'GET' ? prompt('Enter request body (JSON):') : null;
+
+                try {
+                    const response = await EndpointService.testEndpoint(path, method, body);
+                    alert(JSON.stringify(response, null, 2));
+                } catch (error) {
+                    alert(`Error: ${error.message}`);
+                }
+            }
+
+            async getEndpointData(path) {
+                const endpoints = await EndpointService.getEndpoints();
+                return endpoints.find(e => e.path === path);
+            }
+
+            async editEndpoint(path) {
+                const endpoint = await this.getEndpointData(path);
+                if (!endpoint) return;
+
+                const formDiv = document.getElementById(`edit-form-${path.replace(/\//g, '-')}`);
+                formDiv.style.display = 'block';
+                formDiv.innerHTML = this.createEditFormHtml(path, endpoint);
+            }
+
+            createEditFormHtml(path, endpoint) {
+                return `
+                    <h4>Update Endpoint</h4>
+                    <div class="form-group">
+                        <label>Methods (comma-separated):</label>
+                        <input type="text" id="edit-methods-${path}"
+                            value="${endpoint.methods.join(',')}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Required Parameters (comma-separated):</label>
+                        <input type="text" id="edit-params-${path}"
+                            value="${endpoint.required_params.join(',')}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Response Template:</label>
+                        <textarea id="edit-response-${path}" rows="5"
+                            class="form-control">${JSON.stringify(endpoint.response, null, 2)}</textarea>
+                    </div>
+                    <div class="buttons-group">
+                        <button onclick="ui.updateEndpoint('${path}')"
+                            class="btn btn-success">Save</button>
+                        <button onclick="ui.cancelEdit('${path}')"
+                            class="btn btn-secondary">Cancel</button>
+                    </div>
+                `;
+            }
+
+            async updateEndpoint(path) {
+                try {
+                    const updatedEndpoint = {
+                        path,
+                        methods: document.getElementById(`edit-methods-${path}`).value
+                            .split(',').map(m => m.trim()),
+                        required_params: document.getElementById(`edit-params-${path}`).value
+                            ? document.getElementById(`edit-params-${path}`).value
+                                .split(',').map(p => p.trim())
+                            : [],
+                        response: JSON.parse(document.getElementById(`edit-response-${path}`).value)
+                    };
+
+                    if (await EndpointService.updateEndpoint(path, updatedEndpoint)) {
+                        this.loadEndpoints();
+                        alert('Endpoint updated successfully');
+                    } else {
+                        alert('Failed to update endpoint');
+                    }
+                } catch (e) {
+                    alert('Invalid JSON in response template');
+                }
+            }
+
+            cancelEdit(path) {
+                document.getElementById(`edit-form-${path.replace(/\//g, '-')}`).style.display = 'none';
+            }
+
+            async deleteEndpoint(path) {
+                if (!confirm('Are you sure you want to delete this endpoint?')) return;
+
+                if (await EndpointService.deleteEndpoint(path)) {
+                    this.loadEndpoints();
+                    alert('Endpoint deleted successfully');
+                } else {
+                    alert('Failed to delete endpoint');
+                }
+            }
+        }
+
+        // Initialize UI
+        const ui = new EndpointUI();
+    </script>
+</body>
+</html>
